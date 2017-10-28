@@ -151,7 +151,7 @@ if CLIENT then
 				code = code:sub(name:len() + 2)
 			end
 
-			local stuff = { team.GetColor(ply:Team()), ply:Nick(), " ", Color(160, 170, 220), methodInfo.a, gray, "@", methodInfo.c, name, gray, ": " }
+			local stuff = { team.GetColor(ply.Team and ply:Team() or 1001), ply:Nick(), " ", Color(160, 170, 220), methodInfo.a, gray, "@", methodInfo.c, name, gray, ": " }
 			-- stuff[#stuff + 1] = code
 
 			local highlight = syntax_highlight(code)

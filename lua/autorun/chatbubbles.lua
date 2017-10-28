@@ -35,6 +35,7 @@ if CLIENT then
 
 		ply.Chatbubbles = ply.Chatbubbles or {}
 		local bub = ply.Chatbubbles
+		if not bub then return end -- ??
 		bub.typing = typing
 		bub.text = text
 	end)
