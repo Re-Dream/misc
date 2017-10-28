@@ -122,9 +122,14 @@ if CLIENT then
 			pos = pos + ang:Forward() * 7.5
 			pos = pos + ang:Right() * -10
 
+			--[[ figure out if we're behind, the Python1320 way
 			local diff = EyePos() - pos
 			diff:Normalize()
 			local behind = -diff:Dot(ang:Up()) > 0
+			]]
+
+			-- the simpler way
+			local behind = WorldToLocal(EyePos(), EyeAngles(), pos, ang).z < 0
 			if behind then
 				ang:RotateAroundAxis(ang:Right(), 180)
 			end
