@@ -21,16 +21,20 @@ function PLAYER:GetPhysgunning()
 	return self.Physgunning
 end
 
+hook.Add("PlayerCanGrabPlayer", tag, function(ply, ent)
+	local friend = false
+	friend = friend or (ent:IsFriend(ply) and ent:GetInfoNum("physgun_noplayergrab", 1) == 0)
+	friend = friend or ply:IsAdmin()
+	friend = friend or ent:IsBot()
+
+	if friend == false then
+		return friend
+	end
+end)
+
 hook.Add("PhysgunPickup", tag, function(ply, ent)
 	if IsValid(ply) and IsValid(ent) and ply:IsPlayer() and ent:IsPlayer() then
-		local friend = false
-		friend = friend or (ent:IsFriend(ply) and ent:GetInfoNum("physgun_noplayergrab", 1) == 0)
-		friend = friend or ply:IsAdmin()
-		friend = friend or ent:IsBot()
-		local ret = hook.Run("PlayerCanGrabPlayer", ply, ent)
-		if ret ~= nil then
-			friend = ret
-		end
+		local friend = hook.Run("PlayerCanGrabPlayer", ply, ent) or true
 		if friend and not ply.Physgunning and not ent.Physgunner then
 			ent:SetMoveType(MOVETYPE_NONE)
 			ent:SetOwner(ply)
