@@ -4,7 +4,7 @@ local tag = "player_nocollide"
 local PLAYER = FindMetaTable("Player")
 
 if CLIENT then
-	local cl_collide_with_players = CreateConVar("cl_player_nocollide", "0", { FCVAR_ARCHIVE, FCVAR_USERINFO }, "Do you want to collide with players or not?")
+	local cl_player_nocollide = CreateConVar("cl_player_nocollide", "0", { FCVAR_ARCHIVE, FCVAR_USERINFO }, "Do you want to collide with players or not?")
 
 	cvars.AddChangeCallback("cl_player_nocollide", function(cvar, old, new)
 		if old == new then return end
