@@ -1,29 +1,30 @@
 
-do return end -- never worked
-
 if CLIENT then return end
 
-local classes = {
-	["trigger_teleport"] = true,
-	["beam"] = true,
-	["point_spotlight"] = true,
-	["spotlight_end"] = true,
-	["env_sprite"] = true,
-}
-hook.Add("InitPostEntity", "abstraction-changepos", function()
-	if not game.GetMap():lower():match("abstraction") then
-		hook.Remove("InitPostEntity", "abstraction-changepos")
-		return
-	end
-
-	timer.Simple(0, function()
-		for _, ent in next, ents.FindInSphere(Vector(7440, 16, 64), 128) do
-			if classes[ent:GetClass()] then
-				ent:SetPos(Vector(6725, -143, 28))
+local maps = {
+	gm_flatgrass = function()
+		local function SpawnScreenProp()
+			local ent = ents.Create("prop_physics")
+			ent:SetPos(Vector(939.50805664062, 34.173225402832, -12223.96875))
+			ent:SetAngles(Angle(90, 180, 180))
+			ent:SetModel("models/hunter/plates/plate3x4.mdl")
+			ent:SetMaterial("models/props/de_inferno/woodfloor008a")
+			ent.PhysgunDisabled = true
+			ent.m_tblToolsAllowed = {}
+			function ent:CanConstruct() return false end
+			function ent:CanTool() return false end
+			ent.ScreenProp = true
+			ent:Spawn()
+			local gpo = ent:GetPhysicsObject()
+			if IsValid(gpo) then
+				gpo:EnableMotion(false)
 			end
 		end
 
-		hook.Remove("InitPostEntity", "abstraction-changepos")
-	end)
-end)
+		hook.Add("InitPostEntity", "gm_flatgrass_screenprop", SpawnScreenProp)
+		hook.Add("PostCleanupMap", "gm_flatgrass_screenprop", SpawnScreenProp)
+	end
+}
+
+maps[game.GetMap()]()
 
