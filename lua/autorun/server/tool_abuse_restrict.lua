@@ -9,5 +9,13 @@ hook.Add("CanTool", "ToolAbuseRestrict", function(ply, _, tool)
 		ply:ChatPrint("Restricted to allowed materials only!")
 		return false
 	end
+	
+	if(type(tr.Entity) == "Player" and tool == "material") then
+		return false	
+	end
+	
+	if(tr.Entity == game.GetWorld() and tool == "rope") then
+		return false	
+	end
 end)
 
