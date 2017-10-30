@@ -80,15 +80,17 @@ if SERVER then
 	end)
 
 	hook.Add("PlayerTick", tag, function(ply)
-		if ply:GetWeapon("weapon_physgun") and ply:GetActiveWeapon():GetClass() == "weapon_physgun" and ply:KeyDown(IN_ATTACK) then
-			local trace = ply:GetEyeTrace()
-			if IsValid(trace.Entity) and trace.Entity:IsPlayer() and hook.Run("PlayerCanGrabPlayer", ply, trace.Entity) ~= false then
-				ply.TryingToPhysgun = true
+		if not me:GetActiveWeapon() == NULL then
+			if ply:GetWeapon("weapon_physgun") and ply:GetActiveWeapon():GetClass() == "weapon_physgun" and ply:KeyDown(IN_ATTACK) then
+				local trace = ply:GetEyeTrace()
+				if IsValid(trace.Entity) and trace.Entity:IsPlayer() and hook.Run("PlayerCanGrabPlayer", ply, trace.Entity) ~= false then
+					ply.TryingToPhysgun = true
+				else
+					ply.TryingToPhysgun = false
+				end
 			else
 				ply.TryingToPhysgun = false
 			end
-		else
-			ply.TryingToPhysgun = false
 		end
 	end)
 end
