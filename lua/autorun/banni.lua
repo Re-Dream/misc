@@ -75,7 +75,21 @@ if CLIENT then
 			render.SuppressEngineLighting(false)
 		end
 	end)
-	
+
+	function NoJump( cmd )
+	    if(LocalPlayer().banni) then
+	    	cmd:RemoveKey( IN_JUMP )
+	    end
+	end
+	hook.Add("CreateMove", tag, NoJump)
+
+	net.Receive(tag.."_checkifhookshere", function()
+		net.Start(tag.."_checkifhookshere")
+		net.WriteEntity(LocalPlayer())
+		net.WriteBool((hooks.CreateMove[tag] ~= nil))
+		net.SendToServer()
+	end)
+
 	hook.Add("Think", tag, function()
 		for k,v in pairs(player.GetAll()) do
 			if(v.banni == true and v:GetColor() ~= Color(255,0,0)) then
@@ -102,6 +116,21 @@ if CLIENT then
 elseif SERVER then
 	util.AddNetworkString(tag)
 	util.AddNetworkString(tag.."_bannedppl")
+	util.AddNetworkString(tag.."_checkifhookshere")
+
+	timer.Create(tag.."_dontyoudare", 1, 0, function()
+		net.Start(tag.."_checkifhookshere")
+		net.Broadcast()
+	end)
+
+	net.Receive(tag.."_checkifhookshere", function()
+		local ass = net.ReadBool()
+		local ent = net.ReadEntity()
+
+		if not ass then
+			print(ent:Nick().." has no 'CreateMove' hook!")
+		end
+	end)
 
 	local hookss = {}
 
@@ -171,6 +200,10 @@ elseif SERVER then
 
 	hookss.pac_WearOutfit = function(owner)
 		if(owner.banni) then return false,"owner is a banned person" end
+	end
+
+	hookss.PlayerNoClip = function(ply)
+		if(ply.banni) then return false end
 	end
 
 	local args = {
