@@ -24,7 +24,7 @@ if CLIENT then
 			table.insert(a, Color(237,67,55))
 			table.insert(a, " banned ")
 			table.insert(a, Color(255,255,255))
-			table.insert(a, sasdsa:IsPlayer() and sasdsa:Nick() or tbl.steamid)
+			table.insert(a, sasdsa and sasdsa:Nick() or tbl.steamid)
 			table.insert(a, " until "..os.date("%c", tbl.startedat+tbl.time)..", ")
 		else
 			table.insert(a, Color(75,181,67))
@@ -55,10 +55,10 @@ if CLIENT then
 		local tbl = net.ReadTable()
 
 		for k,v in pairs(tbl) do
-			local player = player.GetBySteamID(v.steamid)
+			local ply = player.GetBySteamID(v.steamid)
 
-			if(player ~= false) then
-				player.banni = true
+			if(ply ~= false) then
+				ply.banni = true
 			end
 		end
 	end)
@@ -136,6 +136,8 @@ elseif SERVER then
 	hookss.PlayerInitialSpawn = function(ply)
 		local ass = {}
 
+		print(ply)
+
 		for k,v in pairs(banni.bannedppl) do
 			if(v.steamid == ply:SteamID()) then
 				ply.banni = true
@@ -150,6 +152,10 @@ elseif SERVER then
 				banni.net(ass)
 			end
 		end
+
+		net.Start(tag.."_bannedppl")
+		net.WriteTable(banni.bannedppl)
+		net.Send(ply)
 	end
 
 	hookss.PlayerSpawn = function(ply)
