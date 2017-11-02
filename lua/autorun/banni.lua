@@ -156,6 +156,7 @@ elseif SERVER then
 		if(ply.banni == true) then
 			timer.Simple(0.5, function()
 				ply:SetRunSpeed(ply:GetWalkSpeed())
+				ply:SetSuperJumpMultiplier(1)
 				ply:SetJumpPower(0)
 			end)
 			ply:StripWeapons()
@@ -300,6 +301,7 @@ elseif SERVER then
 			ply.banni = false
 			ply:SetRunSpeed(400)
 			ply:SetJumpPower(200)
+			ply:SetSuperJumpMultiplier(2)
 
 			hook.Run("PlayerLoadout", ply)
 		end
