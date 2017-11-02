@@ -76,20 +76,6 @@ if CLIENT then
 		end
 	end)
 
-	function NoJump( cmd )
-	    if(LocalPlayer().banni) then
-	    	cmd:RemoveKey( IN_JUMP )
-	    end
-	end
-	hook.Add("CreateMove", tag, NoJump)
-
-	net.Receive(tag.."_checkifhookshere", function()
-		net.Start(tag.."_checkifhookshere")
-		net.WriteEntity(LocalPlayer())
-		net.WriteBool((hooks.CreateMove[tag] ~= nil))
-		net.SendToServer()
-	end)
-
 	hook.Add("Think", tag, function()
 		for k,v in pairs(player.GetAll()) do
 			if(v.banni == true and v:GetColor() ~= Color(255,0,0)) then
@@ -116,21 +102,22 @@ if CLIENT then
 elseif SERVER then
 	util.AddNetworkString(tag)
 	util.AddNetworkString(tag.."_bannedppl")
-	util.AddNetworkString(tag.."_checkifhookshere")
 
-	timer.Create(tag.."_dontyoudare", 1, 0, function()
-		net.Start(tag.."_checkifhookshere")
-		net.Broadcast()
-	end)
+	local CMoveData = FindMetaTable( "CMoveData" )
 
-	net.Receive(tag.."_checkifhookshere", function()
-		local ass = net.ReadBool()
-		local ent = net.ReadEntity()
+	function CMoveData:RemoveKeys( keys )
+		-- Using bitwise operations to clear the key bits.
+		local newbuttons = bit.band( self:GetButtons(), bit.bnot( keys ) )
+		self:SetButtons( newbuttons )
+	end
 
-		if not ass then
-			print(ent:Nick().." has no 'CreateMove' hook!")
-		end
-	end)
+	hook.Add( "SetupMove", "jooj", function( ply, mvd, cmd )
+		if(ply.banni) then
+			if mvd:KeyDown( IN_JUMP ) then
+				mvd:RemoveKeys( IN_JUMP )
+			end
+		end	
+	end )
 
 	local hookss = {}
 
