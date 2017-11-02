@@ -122,7 +122,7 @@ elseif SERVER then
 	local hookss = {}
 
 	hookss.ShutDown = function()
-		file.Write(util.TableToJSON(banni.bannedppl))
+		file.Write("banni.txt", util.TableToJSON(banni.bannedppl))
 	end
 
 	hookss.Think = function()
