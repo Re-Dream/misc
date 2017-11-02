@@ -141,15 +141,15 @@ elseif SERVER then
 				ply.banni = true
 				ply:StripWeapons()
 				ply:SetRunSpeed(ply:GetWalkSpeed())
+				ply:SetSuperJumpMultiplier(1)
 				ply:SetJumpPower(0)
 
 				ass = v
+				ass.banned = true
+
+				banni.net(ass)
 			end
 		end
-
-		ass.banned = true
-
-		banni.net(ass)
 	end
 
 	hookss.PlayerSpawn = function(ply)
