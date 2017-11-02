@@ -266,6 +266,7 @@ elseif SERVER then
 
 			ply:StripWeapons()
 			ply:SetRunSpeed(ply:GetWalkSpeed())
+			ply:SetSuperJumpMultiplier(1)
 			ply:SetJumpPower(0)
 		end
 	end
