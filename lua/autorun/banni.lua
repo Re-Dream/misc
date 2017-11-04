@@ -143,6 +143,7 @@ elseif SERVER then
 				ply:SetRunSpeed(ply:GetWalkSpeed())
 				ply:SetSuperJumpMultiplier(1)
 				ply:SetJumpPower(0)
+				ply:ConCommand("+walk")
 
 				ass = v
 				ass.banned = true
@@ -162,6 +163,7 @@ elseif SERVER then
 				ply:SetRunSpeed(ply:GetWalkSpeed())
 				ply:SetSuperJumpMultiplier(1)
 				ply:SetJumpPower(0)
+				ply:ConCommand("+walk")
 			end)
 			ply:StripWeapons()
 		end
@@ -273,6 +275,7 @@ elseif SERVER then
 			ply:SetRunSpeed(ply:GetWalkSpeed())
 			ply:SetSuperJumpMultiplier(1)
 			ply:SetJumpPower(0)
+			ply:ConCommand("+walk")
 		end
 	end
 
@@ -306,6 +309,7 @@ elseif SERVER then
 			ply:SetRunSpeed(400)
 			ply:SetJumpPower(200)
 			ply:SetSuperJumpMultiplier(2)
+			ply:ConCommand("-walk")
 
 			hook.Run("PlayerLoadout", ply)
 		end
