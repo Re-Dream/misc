@@ -63,7 +63,7 @@ if CLIENT then
 		["in"]       = true
 	}
 
-	local function syntax_highlight(code) -- borrowed from Meta, made by Morten
+	local function SyntaxHighlight(code) -- borrowed from Meta, made by Morten
 		local output = {}
 		local finds = {}
 		local types = {}
@@ -136,7 +136,7 @@ if CLIENT then
 		["psc"] = { c = client, a = "printed"				 },
 	}
 
-	hook.Add("OnPlayerChat", tag .. "-syntax", function(ply, txt, tc, dead)
+	hook.Add("OnPlayerChat", tag .. "_syntax", function(ply, txt, tc, dead)
 		local prefix = txt:match(prefix)
 		if prefix then
 			local method = txt:lower():match("^" .. prefix .. "(%w+)%s?")
@@ -154,7 +154,7 @@ if CLIENT then
 			local stuff = { team.GetColor(ply.Team and ply:Team() or 1001), ply:Nick(), " ", Color(160, 170, 220), methodInfo.a, gray, "@", methodInfo.c, name, gray, ": " }
 			-- stuff[#stuff + 1] = code
 
-			local highlight = syntax_highlight(code)
+			local highlight = SyntaxHighlight(code)
 			for _, thing in next, highlight do
 				stuff[#stuff + 1] = thing
 			end
@@ -171,7 +171,9 @@ if SERVER then
 
 	local w = Color(194, 210, 225)
 	local g = Color(127, 255, 127)
-	local msgs = {
+
+	lively_chat = {}
+	lively_chat.Messages = {
 		{
 			message = {
 				w, "If you wish to get news about the server and participate in its discussions, feel free to join the ", g, "Discord", w, " or ", g, "Steam Group", w, "!"
@@ -193,8 +195,8 @@ if SERVER then
 	}
 
 	local curMsg = 1
-	lively_chat = {}
 	function lively_chat.PrintNextAnnouncement()
+		local msgs = lively_chat.Messages
 		ChatAddText(unpack(msgs[curMsg].message))
 
 		curMsg = curMsg + 1
@@ -205,6 +207,7 @@ if SERVER then
 		timer.Adjust(tag .. "_announcements", msgs[curMsg].time, 0, lively_chat.PrintNextAnnouncement)
 	end
 	function lively_chat.StartAnnouncements()
+		local msgs = lively_chat.Messages
 		curMsg = 1
 		timer.Create(tag .. "_announcements", msgs[1].time, 0, lively_chat.PrintNextAnnouncement)
 	end

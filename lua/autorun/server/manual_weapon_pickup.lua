@@ -11,14 +11,8 @@ function PLAYER:Give(class, ...)
 end
 
 hook.Add("PlayerCanPickupWeapon", tag, function(ply, wep)
-	local trace = util.TraceLine({
-		start = ply:GetShootPos(),
-		endpos = ply:GetShootPos() + ply:GetAimVector() * 80,
-		filter = ply,
-		mask = MASK_PLAYERSOLID,
-		ignoreworld = true
-	})
-	if ply:HasWeapon(wep:GetClass()) or ply:KeyDown(IN_USE) and trace.Entity == wep then
+	local trace = ply:GetEyeTrace()
+	if ply:HasWeapon(wep:GetClass()) or (ply:KeyDown(IN_USE) and trace.Entity == wep) then
 		ply._mwp_allowpickup = true
 	end
 
@@ -28,9 +22,6 @@ hook.Add("PlayerCanPickupWeapon", tag, function(ply, wep)
 		end)
 	end
 
-	if not ply._mwp_allowpickup then
-		return false
-	end
-
+	return ply._mwp_allowpickup
 end)
 

@@ -20,15 +20,15 @@ PLAYER.GetName = PLAYER.Nick
 
 if CLIENT then
 	function PLAYER:SetNick(nick)
-		net.Start(tag)
-			net.WriteString(nick)
-		net.SendToServer()
+		self:ConCommand("mingeban nick " .. nick)
 	end
 
 	net.Receive(tag, function()
 		local ply = Player(net.ReadUInt(16))
 		local oldNick = net.ReadString()
 		local newNick = net.ReadString()
+
+		if oldNick == newNick then return end
 
 		chat.AddText(team.GetColor(ply:Team()), oldNick, Color(255, 255, 255, 255), " is now called ", team.GetColor(ply:Team()), newNick, Color(255, 255, 255, 255), ".")
 	end)
@@ -54,7 +54,7 @@ else
 		local oldNick = caller:Nick()
 		caller:SetNick(line)
 		net.Start(tag)
-			net.WriteUInt(caller:UserID(), 16)
+			net.WriteUInt  (caller:UserID(), 16)
 			net.WriteString(oldNick)
 			net.WriteString(caller:Nick())
 		net.Broadcast()
@@ -65,11 +65,6 @@ else
 		if caller:GetPData("Nick") and caller:GetPData("Nick"):Trim() ~= "" then
 			caller:SetNick(caller:GetPData("Nick"))
 		end
-	end)
-
-	net.Receive(tag, function(_, caller)
-		local nick = net.ReadString()
-		mingeban.RunCommand("nick", caller, nick)
 	end)
 end
 

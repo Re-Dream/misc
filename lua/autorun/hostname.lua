@@ -1,8 +1,15 @@
 
+local tag = "hostname"
+
+function GetHostName()
+	return GetGlobalString("ServerName")
+end
+
+hostname = {}
+
+hostname.Get = GetHostName
+
 if CLIENT then
-	function GetHostName()
-		return GetGlobalString("ServerName")
-	end
 else
 
 	local prefix = "Re-Dream: "
@@ -29,38 +36,34 @@ The Lounge]]
 -------------------------------------->            max hostname size i believe
 
 	titles = string.Split(titles, "\n")
-	for key, title in next, titles do
+	for k, title in next, titles do
 		if title:Trim():len() < 1 then
-			table.remove(titles, key)
+			table.remove(titles, k)
 		end
 	end
+	hostname.Titles = titles
 
-	local stopped -- some workaround because timer.Stop is aids
-	function SetHostName(hostName)
-		if not hostName then ResetHostName() return end
-		stopped = hostName and true
-		RunConsoleCommand("hostname", tostring(hostName))
-		SetGlobalString("ServerName", tostring(hostName))
+	function hostname.Set(name)
+		hostname.StopTimer()
+		RunConsoleCommand("hostname", tostring(name))
+		SetGlobalString("ServerName", tostring(name))
 	end
 
-	function SwitchHostName()
-		local hostName = prefix .. titles[math.random(1, #titles)]
-		RunConsoleCommand("hostname", hostName)
-		SetGlobalString("ServerName", hostName)
+	function hostname.Pick()
+		local name = prefix .. titles[math.random(1, #titles)]
+		RunConsoleCommand("hostname", name)
+		SetGlobalString("ServerName", name)
 	end
 
-	function ResetHostName()
-		if stopped then stopped = nil end
-		SwitchHostName()
-	end
-
-	function StopHostName()
-		if not stopped then stopped = true end
-	end
-
-	timer.Create("HostName", 15, 0, function()
-		if stopped then return end
-		SwitchHostName()
+	timer.Create(tag, 15, 0, function()
+		hostname.Pick()
 	end)
+
+	function hostname.StartTimer()
+		return timer.Start(tag)
+	end
+	function hostname.StopTimer()
+		return timer.Stop(tag)
+	end
 end
 

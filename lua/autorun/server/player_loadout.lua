@@ -15,4 +15,3 @@ hook.Add("PlayerLoadout", "temp_loadout", function(ply)
 	return true
 end)
 
-

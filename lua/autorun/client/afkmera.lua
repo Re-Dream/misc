@@ -20,18 +20,18 @@ local lastWeapon = false
 local spawned = 0
 
 local idleSequences = {
-	["^idle_all"] = {act = "pose_standing_0", random = true},
-	["^idle_fist"] = {act = "pose_standing_0", random = true},
-	["^idle_ar2"] = {act = "idle_passive"},
-	["^idle_smg1"] = {act = "idle_passive"},
-	["^idle_physgun"] = {act = "idle_passive"},
-	["^idle_rpg"] = {act = "idle_passive"},
-	["^idle_shotgun"] = {act = "idle_passive"},
-	["^idle_crossbow"] = {act = "idle_passive"},
-	["^idle_grenade"] = {act = "idle_all_0", random = true},
-	["^idle_slam"] = {act = "idle_all_0", random = true},
-	["^idle_pistol"] = {act = "idle_all_0", random = true},
-	["^idle_revolver"] = {act = "idle_all_0", random = true},
+	["^idle_all"]      = { act = "pose_standing_0", random = true },
+	["^idle_fist"]     = { act = "pose_standing_0", random = true },
+	["^idle_grenade"]  = { act = "idle_all_0",      random = true },
+	["^idle_slam"]     = { act = "idle_all_0",      random = true },
+	["^idle_pistol"]   = { act = "idle_all_0",      random = true },
+	["^idle_revolver"] = { act = "idle_all_0",      random = true },
+	["^idle_ar2"]      = { act = "idle_passive" },
+	["^idle_smg1"]     = { act = "idle_passive" },
+	["^idle_physgun"]  = { act = "idle_passive" },
+	["^idle_rpg"]      = { act = "idle_passive" },
+	["^idle_shotgun"]  = { act = "idle_passive" },
+	["^idle_crossbow"] = { act = "idle_passive" },
 }
 local function GetNewSequence(ply)
 	local wep = ply:GetActiveWeapon()

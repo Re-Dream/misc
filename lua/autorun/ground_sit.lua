@@ -1,8 +1,8 @@
 
-local tag = "groundSit"
+local tag = "ground_sit"
 
 if SERVER then
-	concommand.Add("ground_sit", function(ply)
+	concommand.Add(tag, function(ply)
 		if not ply.LastSit or ply.LastSit < CurTime() then
 			ply:SetNWBool(tag, not ply:GetNWBool(tag))
 			ply.LastSit = CurTime() + 1

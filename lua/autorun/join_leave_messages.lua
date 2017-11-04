@@ -1,11 +1,11 @@
+
 local tag = "joinleave"
 
 if SERVER then
 	util.AddNetworkString(tag)
 
-	local geoip
-	pcall(function() geoip = requirex("geoip") end)
-
+	local GeoIP
+	pcall(function() GeoIP = require("geoip") end)
 	local function JoinMessage(name, steamid, entid)
 		local info = {}
 		info.name = name
@@ -32,9 +32,9 @@ if SERVER then
 		local ip = data.address
 		local steamid = data.networkid
 		local entid = data.index
-		if geoip then
-			local geoipres = geoip.Get(ip:Split(":")[1])
-			local geoipinfo = { geoipres.country_name,geoipres.city,geoipres.asn }
+		if GeoIP then
+			local geoipres = GeoIP.Get(ip:Split(":")[1])
+			local geoipinfo = { geoipres.country_name, geoipres.city, geoipres.asn }
 
 			MsgC(Color(0, 255, 0),"[Join] ") print(name .. " (" .. steamid .. ") is connecting to the server! [" .. ip .. (steamid ~= "BOT" and table.Count(geoipinfo) ~= 0 and " | " .. table.concat(geoipinfo, ", ") .. "]" or "]"))
 		else
@@ -78,5 +78,4 @@ if CLIENT then
 		end
 	end)
 end
-
 

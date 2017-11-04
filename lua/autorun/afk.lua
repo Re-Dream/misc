@@ -2,14 +2,15 @@
 local tag = "AFK"
 
 afk = {}
-afk.AFKTime = CreateConVar("mp_afktime", "90", { FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY }, "The time it takes for a player to become AFK while inactive.")
+afk.AFKTime = CreateConVar("mp_afktime", "90", { FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY }, "The time it takes for a player to become AFK when inactive.")
 
 local PLAYER = FindMetaTable("Player")
+
 function PLAYER:IsAFK()
-	return self.isAFK
+	return self.AFK_Is
 end
 function PLAYER:AFKTime()
-	return self.afkTime
+	return self.AFK_Time
 end
 
 if SERVER then
@@ -17,9 +18,9 @@ if SERVER then
 
 	net.Receive(tag, function(_, ply)
 		local is = net.ReadBool()
-		ply.isAFK = is
-		hook.Run("AFK", ply, is, ply.afkTime)
-		ply.afkTime = is and CurTime() - afk.AFKTime:GetInt() or nil
+		ply.AFK_Is = is
+		hook.Run("AFK", ply, is, ply.AFK_Time)
+		ply.AFK_Time = is and CurTime() - afk.AFKTime:GetInt() or nil
 		net.Start(tag)
 			net.WriteUInt(ply:EntIndex(), 8)
 			net.WriteBool(is)
@@ -40,7 +41,7 @@ elseif CLIENT then
 	afk.Is = false
 
 	hook.Add("RenderScene", tag, function()
-		if LocalPlayer() == NULL or not LocalPlayer() then return end
+		if LocalPlayer() == NULL or not LocalPlayer() or CurTime() < 1 then return end
 		afk.Back = 0
 		afk.Gone = CurTime()
 		hook.Remove("RenderScene", tag)
@@ -94,9 +95,9 @@ elseif CLIENT then
 	net.Receive(tag, function()
 		local ply = Entity(net.ReadUInt(8))
 		local is = net.ReadBool()
-		ply.isAFK = is
-		ply.afkTime = is and CurTime() - afk.AFKTime:GetInt() or nil
-		hook.Run("AFK", ply, is)
+		ply.AFK_Is = is
+		hook.Run("AFK", ply, is, ply.AFK_Time)
+		ply.AFK_Time = is and CurTime() - afk.AFKTime:GetInt() or nil
 	end)
 
 	surface.CreateFont(tag, {
@@ -105,7 +106,7 @@ elseif CLIENT then
 		italic = true,
 		weight = 800,
 	})
-	surface.CreateFont(tag .. "Normal", {
+	surface.CreateFont(tag .. "_time", {
 		font = "Roboto Bk",
 		size = 48,
 		italic = false,
@@ -126,7 +127,7 @@ elseif CLIENT then
 		end
 		surface.DrawText(txt)
 	end
-	afk.Draw = CreateConVar("cl_afk_hud_draw", "1", { FCVAR_ARCHIVE }, "Should we draw the AFK HUD?")
+	afk.Draw = CreateConVar("cl_afk_hud_draw", "1", { FCVAR_ARCHIVE })
 	hook.Add("HUDPaint", tag, function()
 		if not afk.Draw:GetBool() then return end
 		afk.Focus = system.HasFocus()
@@ -141,13 +142,14 @@ elseif CLIENT then
 
 		surface.SetAlphaMultiplier(a)
 
-		local timeString = string.NiceTime(AFKTime)
-
 		surface.SetFont(tag)
 		local txt = "You've been away for"
 		local txtW, txtH = surface.GetTextSize(txt)
-		surface.SetFont(tag .. "Normal")
+
+		surface.SetFont(tag .. "_time")
+		local timeString = string.NiceTime(AFKTime)
 		local timeW, timeH = surface.GetTextSize(timeString)
+
 		local wH = txtH + timeH
 
 		surface.SetDrawColor(Color(0, 0, 0, 127))
@@ -156,7 +158,7 @@ elseif CLIENT then
 		surface.SetFont(tag)
 		DrawTranslucentText(txt, ScrW() / 2 - txtW / 2, ScrH() / 2 / 2 - wH / 2)
 
-		surface.SetFont(tag .. "Normal")
+		surface.SetFont(tag .. "_time")
 		local col
 		if afk.Is then
 			col = Color(197, 167, 255)

@@ -1,24 +1,23 @@
 local default = 1.5
 
-do
-	local META = FindMetaTable("Player")
+local tag = "bhop"
 
-	function META:SetSuperJumpMultiplier(mult, dont_update_client)
-		self.super_jump_multiplier = mult
+local PLAYER = FindMetaTable("Player")
 
-		if SERVER and not dont_update_client then
-			umsg.Start("bhop", self)
-				umsg.Float(mult)
-			umsg.End()
-		end
+function PLAYER:SetSuperJumpMultiplier(mult, dont_update_client)
+	self.super_jump_multiplier = mult
 
-		self:SetDuckSpeed(0.05)
-		self:SetUnDuckSpeed(0.05)
+	if SERVER and not dont_update_client then
+		umsg.Start(tag, self)
+			umsg.Float(mult)
+		umsg.End()
 	end
 
-	function META:GetSuperJumpMultiplier()
-		return self.super_jump_multiplier or default
-	end
+	self:SetDuckSpeed(0.05)
+	self:SetUnDuckSpeed(0.05)
+end
+function PLAYER:GetSuperJumpMultiplier()
+	return self.super_jump_multiplier or default
 end
 
 local function calc_wall(ply, data)
@@ -26,11 +25,11 @@ local function calc_wall(ply, data)
 	local normalized = velocity:GetNormalized()
 
 	local params = {}
-		params.start = ply:GetPos()+Vector(0,0,36)
-		params.endpos = params.start+(normalized*math.max(velocity:Length()/20, 50))
-		params.filter = ply
-		params.mins = ply:OBBMins()
-		params.maxs = ply:OBBMaxs()
+	params.start = ply:GetPos()+Vector(0,0,36)
+	params.endpos = params.start+(normalized*math.max(velocity:Length()/20, 50))
+	params.filter = ply
+	params.mins = ply:OBBMins()
+	params.maxs = ply:OBBMaxs()
 	local res = util.TraceHull(params)
 
 	if not ply:IsOnGround() and res.Hit and math.abs(res.HitNormal.z) < 0.7 then
@@ -42,11 +41,9 @@ local function calc_wall(ply, data)
 		data:SetVelocity(direction*1.25)--*(fraction*2+(0.5)))
 
 		if SERVER then
-
 			local fraction = data:GetVelocity():Length() / (GetConVarNumber("sv_maxvelocity") / 4)
-			sound.Play(("weapons/fx/rics/ric%s.wav"):format(math.random(5)), data:GetOrigin(), math.Clamp(300*fraction, 20, 150), math.Clamp(fraction*255+70, 70, 150))
-			sound.Play(("weapons/crossbow/fire1.wav"):format(math.random(5)), data:GetOrigin(), 100, math.Clamp(fraction*255+120, 70, 255))
-
+			sound.Play(("weapons/fx/rics/ric%s.wav"):format(math.random(5)), data:GetOrigin(), math.Clamp(300 * fraction, 20, 150), math.Clamp(fraction * 255 + 70, 70, 150))
+			sound.Play("weapons/crossbow/fire1.wav", data:GetOrigin(), 100, math.Clamp(fraction * 255 + 120, 70, 255))
 		end
 	end
 end
@@ -58,13 +55,12 @@ local function Move(ply, data)
 		if mult ~= 1 and ply:IsOnGround() then
 			data:SetVelocity(data:GetVelocity() * mult)
 
-			local eye = math.Clamp(ply:EyeAngles().p/89, 0, 1) ^ 3
+			local eye = math.Clamp(ply:EyeAngles().p / 89, 0, 1) ^ 3
 			if eye > 0.3 then
-
 				if SERVER then
 					local fraction = data:GetVelocity():Length() / (GetConVarNumber("sv_maxvelocity") / 4)
-					sound.Play(("weapons/fx/rics/ric%s.wav"):format(math.random(5)), data:GetOrigin(), math.Clamp(300*fraction, 20, 150), math.Clamp(fraction*255+70, 70, 150))
-					sound.Play(("physics/plastic/plastic_barrel_impact_bullet3.wav"):format(math.random(5)), data:GetOrigin(), 100, math.Clamp(fraction*255+40, 70, 255))
+					sound.Play(("weapons/fx/rics/ric%s.wav"):format(math.random(5)), data:GetOrigin(), math.Clamp(300 * fraction, 20, 150), math.Clamp(fraction * 255 + 70, 70, 150))
+					sound.Play("physics/plastic/plastic_barrel_impact_bullet3.wav", data:GetOrigin(), 100, math.Clamp(fraction * 255 + 40, 70, 255))
 
 					local ef = EffectData()
 						ef:SetOrigin(data:GetOrigin())
@@ -72,19 +68,17 @@ local function Move(ply, data)
 					timer.Simple(0, function() util.Effect("StunstickImpact", ef) end)
 				end
 
-				data:SetVelocity(LerpVector(eye, data:GetVelocity(), Vector(0.5, 0.5, 1) * data:GetVelocity() + Vector(0,0,data:GetVelocity():Length()*0.3)))
+				data:SetVelocity(LerpVector(eye, data:GetVelocity(), Vector(0.5, 0.5, 1) * data:GetVelocity() + Vector(0, 0, data:GetVelocity():Length() * 0.3)))
 			end
-
 		end
-
 		calc_wall(ply, data)
 	end
 end
 
 if SERVER then
-	hook.Add("SetupMove", "bhop", Move)
+	hook.Add("SetupMove", tag, Move)
 
-	hook.Add("GetFallDamage", "bhop", function(ply, speed)
+	hook.Add("GetFallDamage", tag, function(ply, speed)
 		if ply:KeyDown(IN_JUMP) then
 			return 0
 		end
@@ -92,9 +86,9 @@ if SERVER then
 end
 
 if CLIENT then
-	hook.Add("Move", "bhop", Move)
+	hook.Add("Move", tag, Move)
 
-	usermessage.Hook("bhop", function(u)
+	usermessage.Hook(tag, function(u)
 		LocalPlayer():SetSuperJumpMultiplier(u:ReadFloat())
 	end)
 end

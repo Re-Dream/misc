@@ -1,10 +1,10 @@
 
-if not easylua then return end
+local tag = "theater"
 
-local reload = theater and theater.screen
-theater = {screen = reload}
+local reload = theater and theater.Screen
+theater = { Screen = reload }
 
-theater.locations = {
+theater.Locations = {
 	gm_bluehills_test3 = {
 		offset = Vector(0, 0, 0),
 		angle  = Angle(-90, 90, 0),
@@ -27,42 +27,45 @@ theater.locations = {
 	},
 }
 
-theater.locations["gm_abstraction_ex-night"] = theater.locations["gm_abstraction_ex-sunset"]
+theater.Locations["gm_abstraction_ex-night"] = theater.Locations["gm_abstraction_ex-sunset"]
 
-local l = theater.locations[game.GetMap()]
+local l = theater.Locations[game.GetMap()]
 if not l then
 	theater.spawn = function() ErrorNoHalt("No theater location for this map! " .. game.GetMap() .. "\n") end
 
 	return
 end
 
-easylua.StartEntity("theater_screen")
-	ENT.PrintName = "Theater Screen"
-	ENT.Base = "mediaplayer_base"
-	ENT.Type = "point"
+local ENT = {}
+ENT.ClassName = "theater_screen"
+ENT.PrintName = "Theater Screen"
+ENT.Spawnable = true
+ENT.AdminOnly = true
+ENT.Base = "mediaplayer_base"
+ENT.Type = "point"
 
-	ENT.PlayerConfig = l
-	ENT.IsMediaPlayerEntity = true
+ENT.PlayerConfig = l
+ENT.IsMediaPlayerEntity = true
 
-	if SERVER then
-		local box = ents.FindInBox
+if SERVER then
+	local box = ents.FindInBox
 
-		function ENT:Initialize()
-			local mp = self:InstallMediaPlayer("entity")
+	function ENT:Initialize()
+		local mp = self:InstallMediaPlayer("entity")
 
-			function mp:UpdateListeners()
-				local listeners = {}
-				for _, v in ipairs(box(l.mins, l.maxs)) do
-					if v:IsPlayer() then
-						listeners[#listeners + 1] = v
-					end
+		function mp:UpdateListeners()
+			local listeners = {}
+			for _, v in ipairs(box(l.mins, l.maxs)) do
+				if v:IsPlayer() then
+					listeners[#listeners + 1] = v
 				end
-
-				self:SetListeners(listeners)
 			end
+
+			self:SetListeners(listeners)
 		end
 	end
-easylua.EndEntity()
+end
+scripted_ents.Register(ENT, ENT.ClassName)
 
 if CLIENT then
 	hook.Add("GetMediaPlayer", "theater", function()
@@ -77,24 +80,24 @@ if CLIENT then
 		end
 	end)
 else
-	function theater.spawn()
-		if IsValid(theater.screen) then
-			theater.screen:Remove()
+	function theater.Spawn()
+		if IsValid(theater.Screen) then
+			theater.Screen:Remove()
 		end
 
-		theater.screen = ents.Create("theater_screen")
-		local screen = theater.screen
-			screen:SetPos(l.mpos)
-			screen:SetAngles(l.mang)
-			screen:SetMoveType(MOVETYPE_NONE)
-		screen:Spawn()
-		screen:Activate()
+		theater.Screen = ents.Create("theater_screen")
+		local screen = theater.Screen
+		Screen:SetPos(l.mpos)
+		Screen:SetAngles(l.mang)
+		Screen:SetMoveType(MOVETYPE_NONE)
+		Screen:Spawn()
+		Screen:Activate()
 
 		return screen
 	end
 
-	if reload then theater.spawn() end
-	hook.Add("InitPostEntity", "theater", theater.spawn)
-	hook.Add("PostCleanupMap", "theater", theater.spawn)
+	if reload then theater.Screen() end
+	hook.Add("InitPostEntity", "theater", theater.Screen)
+	hook.Add("PostCleanupMap", "theater", theater.Screen)
 end
 

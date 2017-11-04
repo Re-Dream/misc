@@ -1,12 +1,4 @@
 
---[[ local addons = {
-	["prone-mod"] = 775573383,
-	["notifications"] = 650064006, -- to be redone by ourselves
-	["wiltos-bladesymphony"] = 848953359,
-	["wiltos-base"] = 757604550,
-	-- ["flybysounds"] = 167809847,
-} ]]
-
 if file.Exists("cfg/workshop_downloads.cfg", "GAME") then
 	for _, line in next, file.Read("cfg/workshop_downloads.cfg", "GAME"):Split("\n") do
 		resource.AddWorkshop(line:gsub("(//.+)", ""):Trim())
