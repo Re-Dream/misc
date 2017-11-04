@@ -56,7 +56,7 @@ if SERVER then
 						end
 					end
 					Notify(sid .. "'s props have been cleaned up!", NOTIFY_CLEANUP, 5, "buttons/lever" .. math.random(1, 8) .. ".wav")
-					prstasia.Disconnected[sid] = nil
+					prostasia.Disconnected[sid] = nil
 				end
 			end
 		end
