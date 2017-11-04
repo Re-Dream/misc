@@ -1,17 +1,13 @@
 
 local tag = "hostname"
 
-function GetHostName()
-	return GetGlobalString("ServerName")
-end
-
 hostname = {}
 
-hostname.Get = GetHostName
-
 if CLIENT then
+	function GetHostName()
+		return GetGlobalString("ServerName")
+	end
 else
-
 	local prefix = "Re-Dream: "
 	local titles = -- STOP INDENTING IT, IT BREAKS.
 [[We do shit better.
@@ -66,4 +62,6 @@ The Lounge]]
 		return timer.Stop(tag)
 	end
 end
+
+hostname.Get = GetHostName
 
