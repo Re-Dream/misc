@@ -26,5 +26,8 @@ local maps = {
 	end
 }
 
-maps[game.GetMap()]()
+local map = game.GetMap()
+if maps[map] then
+	maps[map]()
+end
 
