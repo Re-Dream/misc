@@ -5,6 +5,7 @@ local groupID = "103582791457553023" -- Re-Dream
 
 if SERVER then
 	local function IsInGroup(ply)
+		if ply.NextSteamGroupCheck and ply.NextSteamGroupCheck > CurTime() then return end
 		http.Fetch("http://steamcommunity.com/gid/" .. groupID .. "/memberslistxml/?xml=1", function(body, len, headers, code)
 			if body:match("<steamID64>" .. ply:SteamID64() .. "</steamID64>") then
 				ply:SetNWBool(tag, true)
@@ -12,9 +13,10 @@ if SERVER then
 				ply:SetNWBool(tag, false)
 			end
 		end)
+		ply.NextSteamGroupCheck = CurTime() + 10
 	end
 
-	hook.Add("PlayerInitialSpawn", tag, IsInGroup)
+	hook.Add("PlayerSpawn", tag, IsInGroup)
 
 	if istable(GAMEMODE) then
 		for _, ply in next, player.GetAll() do
