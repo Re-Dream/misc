@@ -8,7 +8,7 @@ hook.Add("HUDPaint", "ctp_cmenu", function()
 		if type(path) == "IMaterial" then
 			self:SetMaterial(path)
 		else
-			self:_SetImage(path, backup)
+			self._SetImage(self, path, backup)
 		end
 	end
 
@@ -20,7 +20,7 @@ hook.Add("HUDPaint", "ctp_cmenu", function()
 		"ZCTP",
 		{
 			title = "Thirdperson",
-			icon = WebMaterial("icon64_ctp", "https://gmlounge.us/Re-Dream/fastdl/cmenu_zoom.png"),
+			icon = WebMaterial("icon64_ctp", "https://gmlounge.us/fastdl/cmenu_zoom_extend.png"),
 			width = 960,
 			height = 700,
 			onewindow = true,

@@ -35,6 +35,7 @@ local drawCrosshair = false
 local fn = 0
 hook.Add("HUDShouldDraw", tag, function(elem)
 	local lply = LocalPlayer()
+	if not IsValid(lply) then return end
 
 	local maxHP = lply:GetMaxHealth()
 	if elem == "CHudHealth" and lply:Health() == maxHP then
