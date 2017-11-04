@@ -28,7 +28,7 @@ if SERVER then
 	for _, tbl in next, PlayerSpawned do
 		for _, typ in next, tbl do
 			hook.Add("PlayerSpawned" .. typ, tag, function(ply, model, ent)
-				if ent then model = ent end
+				if not ent then ent = model end
 				ent.prostasia_Owner = ply
 				ent.prostasia_OwnerSteamID = ply:SteamID()
 				ent:SetNWString(tag .. "_owner", ply:SteamID())
