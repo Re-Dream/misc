@@ -3,12 +3,12 @@ local tag = "banni"
 
 if CLIENT then
 	local function emitsound(path,pitch)
-		sound.PlayFile("sound/"..path,"",function(station) 
-			station:SetPlaybackRate(pitch) 
-			station:Play() 
-			hook.Add("Think", "EMITSOUNDSSOSS", function() 
-				station:SetVolume(system.HasFocus() and 1 or 0) 
-			end) 
+		sound.PlayFile("sound/"..path,"",function(station)
+			station:SetPlaybackRate(pitch)
+			station:Play()
+			hook.Add("Think", "EMITSOUNDSSOSS", function()
+				station:SetVolume(system.HasFocus() and 1 or 0)
+			end)
 		end)
 	end
 
@@ -69,7 +69,7 @@ if CLIENT then
 			render.SuppressEngineLighting(true)
 		end
 	end)
-	
+
 	hook.Add("PostPlayerDraw", tag, function(ply)
 		if ply.banni then
 			render.SuppressEngineLighting(false)
@@ -116,7 +116,7 @@ elseif SERVER then
 			if mvd:KeyDown( IN_JUMP ) then
 				mvd:RemoveKeys( IN_JUMP )
 			end
-		end	
+		end
 	end )
 
 	local hookss = {}
@@ -135,8 +135,6 @@ elseif SERVER then
 
 	hookss.PlayerInitialSpawn = function(ply)
 		local ass = {}
-
-		print(ply)
 
 		for k,v in pairs(banni.bannedppl) do
 			if(v.steamid == ply:SteamID()) then
@@ -237,8 +235,8 @@ elseif SERVER then
 		local key = -1
 
 		for k,v in pairs(banni.bannedppl) do
-			if(v.steamid == steamid) then 
-				key = k 
+			if(v.steamid == steamid) then
+				key = k
 			end
 		end
 
@@ -286,8 +284,8 @@ elseif SERVER then
 		local key = -1
 
 		for k,v in pairs(banni.bannedppl) do
-			if(v.steamid == steamid) then 
-				key = k 
+			if(v.steamid == steamid) then
+				key = k
 				banni.bannedppl[k] = nil
 			end
 		end
