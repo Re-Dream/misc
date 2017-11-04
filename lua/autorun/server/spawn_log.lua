@@ -12,23 +12,21 @@ end
 
 local prev
 local function NoVectorDecimals(vec)
-	vec.x = math.Round(vec.x)
-	vec.x = math.Round(vec.y)
-	vec.z = math.Round(vec.z)
+	vec = vec:gsub("(%d+).%d*", "%1")
 	return vec
 end
 local function LogProp(ply, model, ent)
 	if prev == "duplicator" then return end
-	local pos = NoVectorDecimals(ent:GetPos())
-	Log("SPAWN prop", ply, w, ent:GetModel(), g, " (" .. tostring(ent) .. " @ " .. tostring(pos) .. ")")
+	local pos = NoVectorDecimals(tostring(ent:GetPos()))
+	Log("SPAWN prop", ply, w, ent:GetModel(), g, " (" .. tostring(ent) .. " @ " .. pos .. ")")
 end
 local function LogEffect(ply, model, ent)
-	local pos = NoVectorDecimals(ent:GetPos())
-	Log("SPAWN effect", ply, w, ent:GetModel(), g, " (" .. tostring(ent) .. " @ " .. tostring(pos) .. ")")
+	local pos = NoVectorDecimals(tostring(ent:GetPos()))
+	Log("SPAWN effect", ply, w, ent:GetModel(), g, " (" .. tostring(ent) .. " @ " .. pos .. ")")
 end
 local function LogSENT(ply, ent)
-	local pos = NoVectorDecimals(ent:GetPos())
-	Log("SPAWN sent", ply, w, ent.PrintName or ent:GetClass(), g, " (" .. tostring(ent) .. " @ " .. tostring(pos) .. ")")
+	local pos = NoVectorDecimals(tostring(ent:GetPos()))
+	Log("SPAWN sent", ply, w, ent.PrintName or ent:GetClass(), g, " (" .. tostring(ent) .. " @ " .. pos .. ")")
 end
 local function LogVehicle(ply, ent)
 	Log("SPAWN vehicle", ply, w, ent.VehicleTable.Name, g, " (" .. tostring(ent) .. ")")
