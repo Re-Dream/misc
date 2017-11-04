@@ -18,16 +18,21 @@ if SERVER then
 	net.Receive(tag, function(_, ply)
 		local is = net.ReadBool()
 		ply.isAFK = is
+		hook.Run("AFK", ply, is, ply.afkTime)
 		ply.afkTime = is and CurTime() - afk.AFKTime:GetInt() or nil
-		hook.Run("AFK", ply, is)
 		net.Start(tag)
 			net.WriteUInt(ply:EntIndex(), 8)
 			net.WriteBool(is)
 		net.Broadcast()
 	end)
 
-	hook.Add("AFK", "AFKSound", function(ply, is)
+	local w = Color(194, 210, 225)
+	local g = Color(127, 255, 127)
+	hook.Add("AFK", "AFKNotification", function(ply, is, time)
 		ply:EmitSound(not is and "replay/cameracontrolmodeentered.wav" or "replay/cameracontrolmodeexited.wav")
+		if not is then
+			ply:ChatAddText(g, "Welcome back! ", w, "You were away for ", g, string.NiceTime(math.max(0, CurTime() - time - afk.AFKTime:GetInt())), w, ".")
+		end
 	end)
 elseif CLIENT then
 	afk.Mouse = { x = 0, y = 0 }
@@ -36,21 +41,23 @@ elseif CLIENT then
 
 	hook.Add("RenderScene", tag, function()
 		if LocalPlayer() == NULL or not LocalPlayer() then return end
-		afk.When = CurTime() + afk.AFKTime:GetInt()
+		afk.Back = 0
+		afk.Gone = CurTime()
 		hook.Remove("RenderScene", tag)
 	end)
 	local function Input()
-		if not afk.When then return end
-		afk.When = CurTime() + afk.AFKTime:GetInt()
+		if not afk.Gone then return end
 		if afk.Is then
+			afk.Back = afk.Gone
 			net.Start(tag)
 				net.WriteBool(false)
 			net.SendToServer()
 		end
+		afk.Gone = CurTime()
 		afk.Is = false
 	end
 	hook.Add("StartCommand", tag, function(ply, cmd)
-		if ply ~= LocalPlayer() or not afk.When then return end
+		if ply ~= LocalPlayer() or not afk.Gone then return end
 		local mouseMoved = (system.HasFocus() and (afk.Mouse.x ~= gui.MouseX() or afk.Mouse.y ~= gui.MouseY()) or false)
 		if  mouseMoved or
 			cmd:GetMouseX() ~= 0 or
@@ -60,7 +67,7 @@ elseif CLIENT then
 		then
 			Input()
 		end
-		if afk.When < CurTime() and not afk.Is then
+		if afk.Gone + afk.AFKTime:GetInt() < CurTime() and not afk.Is then
 			afk.Is = true
 			net.Start(tag)
 				net.WriteBool(true)
@@ -70,8 +77,18 @@ elseif CLIENT then
 	hook.Add("KeyPress", tag, Input)
 	hook.Add("KeyRelease", tag, Input)
 	hook.Add("PlayerBindPress", tag, Input)
+	local lastAFK = 0
 	local function getAFKtime()
-		return math.abs(math.max(CurTime() - afk.When, 0))
+		local lastInput
+		if afk.Is then
+		 	lastInput = afk.Gone
+		 	lastAFK = CurTime()
+		else
+		 	lastInput = afk.Back
+		end
+		-- return time since last input since time it takes to get afk as well as
+		-- the time it was before we came back
+		return math.max(lastAFK - (lastInput + afk.AFKTime:GetInt()), 0), lastAFK
 	end
 
 	net.Receive(tag, function()
@@ -95,46 +112,35 @@ elseif CLIENT then
 		weight = 800,
 	})
 
-	local function plural(num)
-		return ((num > 1 or num == 0) and "s" or "")
-	end
-	local function DrawTranslucentText(txt, x, y, a, col)
+	local a = 0
+	local function DrawTranslucentText(txt, x, y, col)
 		surface.SetTextPos(x + 2, y + 2)
-		surface.SetTextColor(Color(0, 0, 0, 127 * (a / 255)))
+		surface.SetTextColor(Color(0, 0, 0, 127))
 		surface.DrawText(txt)
 
 		surface.SetTextPos(x, y)
 		if col then
-			surface.SetTextColor(Color(col.r, col.g, col.b, 190 * (a / 255)))
+			surface.SetTextColor(Color(col.r, col.g, col.b, 190))
 		else
-			surface.SetTextColor(Color(255, 255, 255, 190 * (a / 255)))
+			surface.SetTextColor(Color(255, 255, 255, 190))
 		end
 		surface.DrawText(txt)
 	end
-	local a = 0
 	afk.Draw = CreateConVar("cl_afk_hud_draw", "1", { FCVAR_ARCHIVE }, "Should we draw the AFK HUD?")
 	hook.Add("HUDPaint", tag, function()
 		if not afk.Draw:GetBool() then return end
 		afk.Focus = system.HasFocus()
-		if not afk.Is then a = 0 return end
 
-		a = math.Clamp(a + FrameTime() * 120, 0, 255)
+		local AFKTime, lastAFK = getAFKtime()
 
-		local AFKTime = getAFKtime()
-		--[[
-		local h = math.floor(AFKTime / 60 / 60)
-		local m = math.floor(AFKTime / 60 - h * 60)
-		local s = math.floor(AFKTime - m * 60 - h * 60 * 60)
+		-- wait 3 seconds before hiding
+		local show = afk.Is
+		show = show or CurTime() < lastAFK + 3
+		a = Lerp(FrameTime() * 2, a, show and 1 or 0)
+		if a <= 0.005 then return end
 
-		local timeString = ""
-		if h > 0 then
-			timeString = timeString .. h .. " hour" .. plural(h) .. ", "
-		end
-		if m > 0 then
-			timeString = timeString .. m .. " minute" .. plural(m) .. ", "
-		end
-		timeString = timeString .. s .. " second" .. plural(s)
-		]]
+		surface.SetAlphaMultiplier(a)
+
 		local timeString = string.NiceTime(AFKTime)
 
 		surface.SetFont(tag)
@@ -144,14 +150,22 @@ elseif CLIENT then
 		local timeW, timeH = surface.GetTextSize(timeString)
 		local wH = txtH + timeH
 
-		surface.SetDrawColor(Color(0, 0, 0, 127 * (a / 255)))
+		surface.SetDrawColor(Color(0, 0, 0, 127))
 		surface.DrawRect(0, ScrH() * 0.5 * 0.5 - wH * 0.5 - txtH * 0.33, ScrW(), wH + txtH * 0.33 * 2 - 3)
 
 		surface.SetFont(tag)
-		DrawTranslucentText(txt, ScrW() / 2 - txtW / 2, ScrH() / 2 / 2 - wH / 2, a * 0.5)
+		DrawTranslucentText(txt, ScrW() / 2 - txtW / 2, ScrH() / 2 / 2 - wH / 2)
 
 		surface.SetFont(tag .. "Normal")
-		DrawTranslucentText(timeString, ScrW() / 2 - timeW / 2, ScrH() / 2 / 2 - wH / 2 + txtH, a, Color(197, 167, 255))
+		local col
+		if afk.Is then
+			col = Color(197, 167, 255)
+		else
+			col = Color(167, 255, 167)
+		end
+		DrawTranslucentText(timeString, ScrW() / 2 - timeW / 2, ScrH() / 2 / 2 - wH / 2 + txtH, col)
+
+		surface.SetAlphaMultiplier(1)
 	end)
 
 end
