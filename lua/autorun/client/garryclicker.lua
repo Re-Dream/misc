@@ -1,6 +1,6 @@
 local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/' --Dont worry about this and do not touch!
 
-GarryClicker = GarryClicker or {}
+local GarryClicker = GarryClicker or {}
 GarryClicker.Notify = function(Text)
 	return chat.AddText(Color(0, 255, 255), "[GARRYCLICKER] ", Color(0, 0, 255), Text)
 end
