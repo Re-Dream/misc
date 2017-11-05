@@ -25,13 +25,30 @@ theater.Locations = {
 		mpos   = Vector(-720, -2080, 249),
 		mang   = Angle(0, 0, 0),
 	},
+	redream_waterlands = {
+		offset = Vector(0, 0, 0),
+		angle  = Angle(-90, -90, 0),
+		height = 232,
+		width  = 412,
+		mins   = Vector(4752.1904296875, 9023.96875, -160.29290771484),
+		maxs   = Vector(5320.71875, 8122.2255859375, -661.05981445312),
+		mpos   = Vector(4822.17578125, 9022.96875, -168.15637207031),
+		mang   = Angle(180, 90, 0),
+	},
 }
 
 theater.Locations["gm_abstraction_ex-night"] = theater.Locations["gm_abstraction_ex-sunset"]
 
-local l = theater.Locations[game.GetMap()]
+local l
+for map, _ in next, theater.Locations do
+	local match = game.GetMap():match(map)
+	if match and (not l or #l < #match) then
+		l = match
+	end
+end
+l = theater.Locations[l]
 if not l then
-	theater.spawn = function() ErrorNoHalt("No theater location for this map! " .. game.GetMap() .. "\n") end
+	theater.Spawn = function() ErrorNoHalt("No theater location for this map! " .. game.GetMap() .. "\n") end
 
 	return
 end
@@ -67,11 +84,12 @@ if SERVER then
 end
 scripted_ents.Register(ENT, ENT.ClassName)
 
+local i = 0
 if CLIENT then
 	hook.Add("GetMediaPlayer", "theater", function()
 		local ply = LocalPlayer()
 
-		if ply:GetPos():WithinAABox(l.mins, l.maxs) then
+		if ply:GetPos():WithinBox(l.mins, l.maxs) then
 			local ent = ents.FindByClass("theater_screen")[1]
 
 			if ent then
@@ -87,17 +105,22 @@ else
 
 		theater.Screen = ents.Create("theater_screen")
 		local screen = theater.Screen
-		Screen:SetPos(l.mpos)
-		Screen:SetAngles(l.mang)
-		Screen:SetMoveType(MOVETYPE_NONE)
-		Screen:Spawn()
-		Screen:Activate()
+		local pos, ang = l.mpos, l.mang
+		pos = pos + ang:Forward() * 1
+		screen:SetPos(pos)
+		screen:SetAngles(ang)
+		screen:SetMoveType(MOVETYPE_NONE)
+		screen:Spawn()
+		screen:Activate()
 
 		return screen
 	end
+	local function Hook()
+		theater.Spawn() -- DON'T RETURN
+	end
 
-	if reload then theater.Screen() end
-	hook.Add("InitPostEntity", "theater", theater.Screen)
-	hook.Add("PostCleanupMap", "theater", theater.Screen)
+	if reload then theater.Spawn() end
+	hook.Add("InitPostEntity", "theater", Hook)
+	hook.Add("PostCleanupMap", "theater", Hook)
 end
 
