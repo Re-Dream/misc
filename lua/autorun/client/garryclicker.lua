@@ -1,6 +1,6 @@
 local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/' --Dont worry about this and do not touch!
 
-local GarryClicker = GarryClicker or {}
+GarryClicker = GarryClicker or {}
 GarryClicker.Notify = function(Text)
 	return chat.AddText(Color(0, 255, 255), "[GARRYCLICKER] ", Color(0, 0, 255), Text)
 end
@@ -125,7 +125,7 @@ GarryClicker.VerdanaSize23 = surface.CreateFont("VerdanaSize23", {
 })
 GarryClicker.Coolvetica = surface.CreateFont("GC_Coolvetica", {
 	font = "coolvetica",
-	size = ScreenScale(54)
+	size = ScreenScale(100)
 })
 GarryClicker.BigNumToString = function(Number)
 	if Number < 1e14 then return Number end
@@ -278,10 +278,13 @@ GarryClicker.CreateGUI = function()
 		draw.RoundedBox(8, 0, 0, GarryClicker.Frame:GetWide(), GarryClicker.Frame:GetTall(), Color(30, 30, 30, 255))
 		draw.RoundedBox(8, 0, 0, GarryClicker.Frame:GetWide(), 30, GarryClicker.DefaultColor)
 		
+
 		if Condition1 and Condition2 and Pressed == true then
 			draw.RoundedBox(8, 150 - 10, 200 - 10, 170, 170, Color(math.random(0, 255), math.random(0, 255), math.random(0, 255), 255))
 		end
+		
 		draw.RoundedBox(8, 150, 200, 150, 150, GarryClicker.DefaultColor)
+		draw.DrawText("g", "GC_Coolvetica", 195, 200, Color(255, 255, 255, 255))
 	end
 	GarryClicker.Frame.OnClose = function()
 		GarryClicker.Frame:Hide()
