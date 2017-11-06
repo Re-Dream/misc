@@ -67,7 +67,7 @@ if SERVER then
 			if IsValid(ent.prostasia_Owner) then
 				return (ent.prostasia_Owner == ply or ent.prostasia_Owner:IsFriend(ply) or ply:IsAdmin())
 			else
-				return ent:MapCreationID() == -1
+				return ent:MapCreationID() == -1 or ent:IsWorld()
 			end
 		end
 	end
