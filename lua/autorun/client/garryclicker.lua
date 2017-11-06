@@ -9,8 +9,7 @@ GarryClicker.Stats = {
 	GarriesPerClick = 1,
 	GarriesPerSecond = 0,
 	TotalClicks = 0,
-	Interval = 1000,
-	Multiplier = 1
+	Interval = 1000
 }
 GarryClicker.People = {
 	{Name = "Kleiner", Amount = 0, Price = 15, Payout = 1},
@@ -40,7 +39,6 @@ GarryClicker.RandomOutcomes = {
 	function() for i,v in pairs(GarryClicker.People) do v.Price = v.Price / 10 end end,
 	function() for i,v in pairs(GarryClicker.People) do v.Payout = v.Payout * 17 end end,
 	function() GarryClicker.Stats.GarriesPerClick = GarryClicker.Stats.GarriesPerClick * 5 end,
-	function() GarryClicker.Stats.GarriesPerClick = GarryClicker.Stats.GarriesPerClick ^ 2 end,
 }
 GarryClicker.Upgrades = {
 	{Name = "Nothing", Price = 0, OnBuy = print, Bought = true, Description = "Click on a button\nto buy something!"}
@@ -52,7 +50,7 @@ GarryClicker.AddGPS = function()
 end
 do
 	for i = 1, 96 do
-		local Chance = math.random(1, 8)
+		local Chance = math.random(1, 7)
 		local Description = ""
 		if Chance == 1 then Description = "Garries per second is\nmultiplied by 4."
 		elseif Chance == 2 then Description = "People's payouts are\nmultiplied by 4."
@@ -60,12 +58,11 @@ do
 		elseif Chance == 4 then Description = "People's payouts are\nmultiplied by 10." 
 		elseif Chance == 5 then Description = "People's prices are\ndivided by 10." 
 		elseif Chance == 6 then Description = "People's payouts are\nmultiplied by 17." 
-		elseif Chance == 7 then Description = "Per Click is\nmultiplied by 5." 
-		else Description = "Per Click is\nsquared." end
+		else Description = "Per Click is\nmultiplied by 5." end
 		
 		table.insert(GarryClicker.Upgrades, {
 			Name = table.Random(GarryClicker.UpgradeNames),
-			Price = 1e6 ^ (i/4.6),
+			Price = 1e6 ^ (i/4.75),
 			Bought = false,
 			Description = Description,
 			OnBuy = GarryClicker.RandomOutcomes[Chance]
@@ -88,6 +85,87 @@ GarryClicker.Click = {
 		GarryClicker.Stats.GarriesPerClick = GarryClicker.Stats.GarriesPerClick * 2
 	end,
 }
+GarryClicker.Ascensions = {
+	Gabens2Earn = 0,
+	GabensEarned = 0,
+	TotalAscensions = 0,
+	OnAscend = function()
+		GarryClicker.Ascensions.TotalAscensions = GarryClicker.Ascensions.TotalAscensions + 1
+		GarryClicker.Ascensions.GabensEarned = GarryClicker.Ascensions.GabensEarned + GarryClicker.Ascensions.Gabens2Earn
+		
+		local GabenGain = GarryClicker.Ascensions.GabensEarned * 1.05
+		local Disadvantage = GarryClicker.Ascensions.TotalAscensions / 2 + 1
+		
+		GarryClicker.Stats = {
+			Garries = 0,
+			GarriesPerClick = 1,
+			GarriesPerSecond = 0,
+			TotalClicks = 0,
+			Interval = 1000
+		}
+		GarryClicker.People = {
+			{Name = "Kleiner", Amount = 0, Price = 15 * Disadvantage, Payout = 1 + GabenGain},
+			{Name = "Freeman", Amount = 0, Price = 100 * Disadvantage, Payout = 10 + GabenGain},
+			{Name = "Alyx", Amount = 0, Price = 1100 * Disadvantage, Payout = 80 + GabenGain},
+			{Name = "Chell", Amount = 0, Price = 1.2e4 * Disadvantage, Payout = 470 + GabenGain},
+			{Name = "Barney", Amount = 0, Price = 1.3e5 * Disadvantage, Payout = 2600 + GabenGain},
+			{Name = "Breen", Amount = 0, Price = 1.4e6 * Disadvantage, Payout = 14000 + GabenGain},
+			{Name = "Eli", Amount = 0, Price = 2.0e7 * Disadvantage, Payout = 78000 + GabenGain},
+			{Name = "GMan", Amount = 0, Price = 3.3e8 * Disadvantage, Payout = 440000 + GabenGain},
+			{Name = "Police", Amount = 0, Price = 5.1e9 * Disadvantage, Payout = 2600000 + GabenGain},
+			{Name = "Combine", Amount = 0, Price = 7.5e10 * Disadvantage, Payout = 16000000 + GabenGain},
+			{Name = "Vortigaunt", Amount = 0, Price = 1.0e11 * Disadvantage, Payout = 100000000 + GabenGain},
+			{Name = "Advisor", Amount = 0, Price = 1.0e12 * Disadvantage, Payout = 1000000000 + GabenGain}
+		}
+		GarryClicker.Speed = {
+			Price = 5.0e4 * Disadvantage,
+			OnBuy = function()
+				GarryClicker.Speed.Price = GarryClicker.Speed.Price * 1.3
+				GarryClicker.Stats.Interval = GarryClicker.Stats.Interval - 10
+				GarryClicker.AddGPS()
+			end,
+			Max = false
+		}
+		GarryClicker.Click = {
+			Price = 20000 * Disadvantage,
+			OnBuy = function()
+				GarryClicker.Click.Price = GarryClicker.Click.Price * 3
+				GarryClicker.Stats.GarriesPerClick = GarryClicker.Stats.GarriesPerClick * 2
+			end,
+		}
+		GarryClicker.Upgrades = {
+			{Name = "Nothing", Price = 0, OnBuy = print, Bought = true, Description = "Click on a button\nto buy something!"}
+		}
+		do
+			for i = 1, 96 do
+				local Chance = math.random(1, 7)
+				local Description = ""
+				if Chance == 1 then Description = "Garries per second is\nmultiplied by 4."
+				elseif Chance == 2 then Description = "People's payouts are\nmultiplied by 4."
+				elseif Chance == 3 then Description = "People's prices are\ndivided by 4."
+				elseif Chance == 4 then Description = "People's payouts are\nmultiplied by 10." 
+				elseif Chance == 5 then Description = "People's prices are\ndivided by 10." 
+				elseif Chance == 6 then Description = "People's payouts are\nmultiplied by 17." 
+				else Description = "Per Click is\nmultiplied by 5." end
+				
+				table.insert(GarryClicker.Upgrades, {
+					Name = table.Random(GarryClicker.UpgradeNames),
+					Price = 1e6 ^ (i/4.75) * Disadvantage,
+					Bought = false,
+					Description = Description,
+					OnBuy = GarryClicker.RandomOutcomes[Chance]
+				})
+			end
+		end
+		
+		GarryClicker.Notify("You have ascended into ascension "..GarryClicker.Ascensions.TotalAscensions.." with "..GarryClicker.HandleMoney(GarryClicker.Ascensions.Gabens2Earn).." Gabens!")
+		GarryClicker.Notify("Your total Gabens: "..GarryClicker.HandleMoney(GarryClicker.Ascensions.GabensEarned))
+		surface.PlaySound("garrysmod/save_load1.wav")
+	end
+}
+GarryClicker.AscensionsHook = hook.Add("Think", "AscensionHook", function()
+	GarryClicker.Ascensions.Gabens = math.round(GarryClicker.Stats.Garries/5e15)
+end)
 GarryClicker.Current = 1
 GarryClicker.VerdanaSize13 = surface.CreateFont("VerdanaSize13", {
 	font = "Verdana",
@@ -211,6 +289,13 @@ GarryClicker.HandleMoney = function(Input)
 	end
 	return "¢"..(Input)
 end
+GarryClicker.DefaultColorToTable = function()
+	return {
+		r = GarryClicker.DefaultColor.r,
+		g = GarryClicker.DefaultColor.g,
+		b = GarryClicker.DefaultColor.b
+	}
+end
 GarryClicker.Filename = "garryclickerdatav2.txt"
 GarryClicker.SaveStats = function()
 	local TablesToSave = {
@@ -218,7 +303,11 @@ GarryClicker.SaveStats = function()
 		GarryClicker.People,
 		GarryClicker.Upgrades,
 		GarryClicker.Speed,
-		GarryClicker.Click
+		GarryClicker.Click,
+		GarryClicker.Ascensions,
+		GarryClicker.DefaultColor.r,
+		GarryClicker.DefaultColor.g,
+		GarryClicker.DefaultColor.b
 	}
 	TablesToSave = util.TableToJSON(TablesToSave)
 	TablesToSave = GarryClicker.EncodeData(TablesToSave)
@@ -236,7 +325,6 @@ GarryClicker.LoadStats = function()
 		
 		GarryClicker.Notify("GarryClicker save found!")
 		GarryClicker.Notify("Size: "..(file.Size("garryclickerdatav2.txt", "DATA")/1000).."KB")
-		
 		GarryClicker.Stats = Data[1]
 		GarryClicker.People = Data[2]
 		for k,v in pairs(GarryClicker.Upgrades) do
@@ -245,6 +333,9 @@ GarryClicker.LoadStats = function()
 		GarryClicker.Speed.Price = Data[4].Price
 		GarryClicker.Speed.Max = Data[4].Max
 		GarryClicker.Click.Price = Data[5].Price
+		GarryClicker.Ascensions.TotalAscensions = Data[6].TotalAscensions
+		GarryClicker.Ascensions.GabensEarned = Data[6].GabensEarned
+		GarryClicker.DefaultColor = Color(Data[7], Data[8], Data[9])
 	end
 end
 GarryClicker.DefaultColor = Color(0, 127, 255, 255)
@@ -542,10 +633,76 @@ GarryClicker.CreateShop = function()
 			"\nGarries Left: \n"..ToGo)
 	end)
 end
+GarryClicker.CreateAscensionGUI = function()
+	GarryClicker.AFrame = vgui.Create("DFrame")
+	GarryClicker.AFrame:SetSize(300, 100)
+	GarryClicker.AFrame:SetTitle("Ascension GUI")
+	GarryClicker.AFrame:Center()
+	GarryClicker.AFrame:MakePopup()
+	GarryClicker.AFrame.Paint = function()
+		draw.RoundedBox(8, 0, 0, GarryClicker.AFrame:GetWide(), GarryClicker.AFrame:GetTall(), Color(30, 30, 30, 255))
+		draw.RoundedBox(8, 0, 0, GarryClicker.AFrame:GetWide(), 30, GarryClicker.DefaultColor)
+	end
+	GarryClicker.AFrame.OnClose = function()
+		GarryClicker.AFrame:Hide()
+		hook.Remove("Think", "Ascension")
+		gui.EnableScreenClicker(false)
+	end
+	
+	local Ascend = vgui.Create("DButton", GarryClicker.AFrame)
+	Ascend:SetSize(50, 30)
+	Ascend:SetText("Ascend")
+	Ascend:SetPos(10, 40)
+	Ascend:SetFont("VerdanaSize13")
+	Ascend:SetColor(Color(255, 255, 255))
+	Ascend.Paint = function()
+		draw.RoundedBox(8, 0, 0, Ascend:GetWide(), Ascend:GetTall(), GarryClicker.DefaultColor)
+	end
+	Ascend.DoClick = GarryClicker.Ascensions.OnAscend
+	
+	local DescLabel = vgui.Create("DLabel", GarryClicker.AFrame)
+	DescLabel:SetPos(70, 40)
+	DescLabel:SetSize(200, 30)
+	DescLabel:SetFont("VerdanaSize13")
+	DescLabel:SetColor(Color(255,255,255))
+	DescLabel:SetText("label")
+	
+	hook.Add("Think", "Ascension", function()
+		GarryClicker.Ascensions.Gabens2Earn = math.Round(GarryClicker.Stats.Garries / 5e14)
+		DescLabel:SetText("If you ascend, you will recieve\n"..GarryClicker.HandleMoney(GarryClicker.Ascensions.Gabens2Earn).." Gabens.")
+	end)
+end
+GarryClicker.ColorMixer = function()
+	GarryClicker.CFrame = vgui.Create("DFrame")
+	GarryClicker.CFrame:SetSize(200, 200)
+	GarryClicker.CFrame:SetTitle("Color Mixer")
+	GarryClicker.CFrame:Center()
+	GarryClicker.CFrame:MakePopup()
+	GarryClicker.CFrame.Paint = function()
+		draw.RoundedBox(8, 0, 0, GarryClicker.CFrame:GetWide(), GarryClicker.CFrame:GetTall(), Color(30, 30, 30, 255))
+		draw.RoundedBox(8, 0, 0, GarryClicker.CFrame:GetWide(), 30, GarryClicker.DefaultColor)
+	end
+	GarryClicker.CFrame.OnClose = function()
+		GarryClicker.CFrame:Hide()
+		hook.Remove("Think", "ColorMixer")
+		gui.EnableScreenClicker(false)
+	end	
+	
+	local ColorMixer = vgui.Create("DColorMixer", GarryClicker.CFrame)
+	ColorMixer:Dock(FILL)
+	ColorMixer:SetColor(GarryClicker.DefaultColor)
+	
+	hook.Add("Think", "ColorMixer", function()
+		GarryClicker.DefaultColor = ColorMixer:GetColor()
+	end)
+end
+
 GarryClicker.LoadStats()
 
 concommand.Add("gc_gui", GarryClicker.CreateGUI)
 concommand.Add("gc_shop", GarryClicker.CreateShop)
+concommand.Add("gc_ascend", GarryClicker.CreateAscensionGUI)
+concommand.Add("gc_color", GarryClicker.ColorMixer)
 timer.Create("Autosave", 1, 0, GarryClicker.SaveStats)
 surface.PlaySound("garrysmod/save_load1.wav")
 
