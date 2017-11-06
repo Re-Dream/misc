@@ -42,6 +42,7 @@ if CLIENT then
 
 	local started = false
 	hook.Add("Initialize", tag, function()
+		--[[
 		local easychat_enable = GetConVar("easychat_enable")
 		if easychat_enable and easychat_enable:GetBool() then
 			hook.Add("ECOpened", tag, function()
@@ -52,6 +53,7 @@ if CLIENT then
 				net.SendToServer()
 			end)
 		end
+		]]
 		hook.Add("StartChat", tag, function()
 			started = true
 			net.Start(tag)
