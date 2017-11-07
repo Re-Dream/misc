@@ -113,6 +113,7 @@ if CLIENT then
 			surface.SetDrawColor( Color( 0, 0, 0, 50 ) )
 			surface.DrawRect(0,0,ScrW(),ScrH())
 			surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
+			surface.DrawOutlinedRect(0,0,ScrW(),ScrH())
 			draw.DrawText( "Click and drag to select, right click to cancel", "NotiFont", ScrW()/2, 50, Color( 200, 200, 200, 255 ), TEXT_ALIGN_CENTER )
 			gui.EnableScreenClicker(true)
 			if(input.IsButtonDown(MOUSE_LEFT))then
