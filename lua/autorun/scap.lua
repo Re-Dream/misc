@@ -194,7 +194,7 @@ if CLIENT then
 	
 	hook.Add("OnPlayerChat","commandHook",function(ply,text)
 		local txt = string.Left(string.lower( text ),5)
-		if(txt == "!scap" or txt == ".scap" or txt == "/scap" and ply == LocalPlayer()) then
+		if (txt == "!scap" or txt == ".scap" or txt == "/scap") and (ply == LocalPlayer()) then
 			local playername = string.sub(text,7,string.len(text))
 			if(string.len(playername) > 0)then
 				for _,ply in pairs(player.GetHumans()) do
