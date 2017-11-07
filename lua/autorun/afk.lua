@@ -121,9 +121,9 @@ elseif CLIENT then
 
 		surface.SetTextPos(x, y)
 		if col then
-			surface.SetTextColor(Color(col.r, col.g, col.b, 190))
+			surface.SetTextColor(Color(col.r, col.g, col.b, 164))
 		else
-			surface.SetTextColor(Color(255, 255, 255, 190))
+			surface.SetTextColor(Color(255, 255, 255, 164))
 		end
 		surface.DrawText(txt)
 	end
@@ -137,7 +137,7 @@ elseif CLIENT then
 		-- wait 3 seconds before hiding
 		local show = afk.Is
 		show = show or CurTime() < lastAFK + 3
-		a = Lerp(FrameTime() * 2, a, show and 1 or 0)
+		a = Lerp(FrameTime() * 3, a, show and 1 or 0)
 		if a <= 0.005 then return end
 
 		surface.SetAlphaMultiplier(a)
