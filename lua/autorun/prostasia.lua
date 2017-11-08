@@ -51,7 +51,7 @@ if SERVER then
 			for sid, time in next, prostasia.Disconnected do
 				if CurTime() - time > prostasia.DisconnectedCleanupDelay:GetInt() * 60 then
 					for _, ent in next, ents.GetAll() do
-						if ent.prostasia_OwnerSteamID == sid then
+						if IsValid(ent) and ent.prostasia_OwnerSteamID == sid then
 							ent:Remove()
 						end
 					end
@@ -95,5 +95,8 @@ if SERVER then
 
 		local allowed = Check(ply, ent)
 		return allowed
+	end)
+	hook.Add("CanProperty", tag, function(ply, property, ent)
+		return Check(ply, ent)
 	end)
 end
