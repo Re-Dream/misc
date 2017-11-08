@@ -188,8 +188,11 @@ if CLIENT then
 		butt:SetPos( 4, fram:GetTall()-34 )
 		butt:SetSize( fram:GetWide()-8, 30 )
 		butt.DoClick = function()
-			fram:Close()
-			selectcapt(plist:GetSelected()[1]:GetValue(2))
+			local value = plist:GetSelected()[1]
+			if(IsValid(value))then
+				fram:Close()
+				selectcapt(value:GetValue(2))
+			end
 		end
 	end
 	
