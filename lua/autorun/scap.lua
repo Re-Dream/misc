@@ -3,7 +3,6 @@ if SERVER then
 	util.AddNetworkString("scap_data")
 	util.AddNetworkString("ccap_seen")
 	util.AddNetworkString("scap_seen")
-
 	net.Receive("ccap_data",function(len,ply)
 		local recipient = net.ReadString()
 		local data = net.ReadData(1024*1024)
@@ -25,6 +24,7 @@ if CLIENT then
 	local scapq = {}
 	
 	local function CreateFont()
+		
 	    surface.CreateFont( "NotiFont", {
 	    font = "Roboto Cn",
 	    extended = true,
@@ -129,16 +129,13 @@ if CLIENT then
 		local y2 = ScrH()
 		local done = false
 		local mat_Screen = Material( "pp/fb" )
-		
 		hook.Add("PostRenderVGUI","selectcapt",function()
 			render.UpdateScreenEffectTexture()
 			hook.Add("RenderScene","cancerscene",function()
-						
 				cam.Start2D()					
 					render.SetMaterial( mat_Screen )
 					render.DrawScreenQuad()
 				cam.End2D()
-						
 				if(not done)then
 					return true
 				end
@@ -163,22 +160,24 @@ if CLIENT then
 			end
 			surface.DrawOutlinedRect(x1,y1,x2-x1,y2-y1)
 			if(input.IsButtonDown(KEY_ESCAPE))then
-				done = true
+				RunConsoleCommand("cancelselect")
 				hook.Remove("PostRenderVGUI","selectcapt")
+				done = true
 				gui.EnableScreenClicker(false)
 			end
 			if(input.IsButtonDown(MOUSE_RIGHT))then
-				
-				local capt = capture(x1,y1,x2-x1,y2-y1,recipient)
-				if(capt == true)then
-					done = true
-					hook.Remove("PostRenderVGUI","selectcapt")
-					gui.EnableScreenClicker(false)
-				else
-					chat.AddText(Color(255,0,0),"Image too big to send! select a smaller area!")
-					done = true
-					hook.Remove("PostRenderVGUI","selectcapt")
-					gui.EnableScreenClicker(false)
+				for k,v in pairs(recipient)do
+					local capt = capture(x1,y1,x2-x1,y2-y1,v)
+					if(capt == true)then
+						done = true
+						hook.Remove("PostRenderVGUI","selectcapt")
+						gui.EnableScreenClicker(false)
+					else
+						chat.AddText(Color(255,0,0),"Image too big to send! select a smaller area!")
+						done = true
+						hook.Remove("PostRenderVGUI","selectcapt")
+						gui.EnableScreenClicker(false)
+					end
 				end
 			end
 		end)
@@ -208,7 +207,7 @@ if CLIENT then
 		local fram = vgui.Create( "DFrame" )
 		fram:SetSize( 200, 250 )
 		fram:Center()
-		fram:SetTitle( "Select player" )
+		fram:SetTitle( "Select player(s)" )
 		fram:SetDraggable( true )
 		fram:SetDeleteOnClose(true)
 		fram:MakePopup()
@@ -228,10 +227,12 @@ if CLIENT then
 		butt:SetSize( fram:GetWide()-8, 30 )
 		butt.DoClick = function()
 			if(table.Count(plist:GetSelected()) > 0)then
+				local tabl = {}
 				fram:Close()
 				for k,v in pairs(plist:GetSelected()) do
-					selectcapt(v:GetValue(2))
+					table.insert(tabl,v:GetValue(2))
 				end
+				selectcapt(tabl)
 			end
 		end
 	end
