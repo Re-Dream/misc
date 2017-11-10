@@ -22,7 +22,7 @@ if SERVER then
 	end
 	timer.Create(tag, 1, 0, function()
 		for _, ply in next, player.GetAll() do
-			local addTime = CurTime() - (ply.LastPlaytimeUpdate or 0)
+			local addTime = CurTime() - (ply.LastPlaytimeUpdate or CurTime())
 			ply.Playtime = ply.Playtime and ply.Playtime + addTime or 0
 			ply:SetNWFloat(tag, ply.Playtime)
 
