@@ -244,7 +244,7 @@ if CLIENT then
 			if(string.len(playername) > 0)then
 				for _,ply in pairs(player.GetHumans()) do
 					if ply:Nick():lower():find(playername,1,true)==1 then
-						selectcapt(ply:SteamID())
+						selectcapt({ply:SteamID()})
 					end
 				end
 			else
