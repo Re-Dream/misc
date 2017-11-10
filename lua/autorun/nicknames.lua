@@ -16,7 +16,7 @@ function PLAYER:Nick()
 end
 PLAYER.Name = PLAYER.Nick
 PLAYER.GetNick = PLAYER.Nick
-PLAYER.GetName = PLAYER.Nick
+-- PLAYER.GetName = PLAYER.Nick -- don't override this, SetName sues it
 
 if CLIENT then
 	function PLAYER:SetNick(nick)
