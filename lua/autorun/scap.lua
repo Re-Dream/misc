@@ -1,6 +1,8 @@
 if SERVER then
 	util.AddNetworkString("ccap_data")
 	util.AddNetworkString("scap_data")
+	util.AddNetworkString("ccap_seen")
+	util.AddNetworkString("scap_seen")
 	net.Receive("ccap_data",function(len,ply)
 		local recipient = net.ReadString()
 		local data = net.ReadData(1024*1024)
@@ -9,6 +11,12 @@ if SERVER then
 		net.WriteData(data,string.len(data))
 		net.Send(player.GetBySteamID(recipient))
 	end)
+	
+	net.Receive("ccap_seen",function(len,ply)
+		net.Start("scap_seen")
+		net.WriteString(ply:SteamID())
+		net.Send(player.GetBySteamID(net.ReadString()))
+	end)
 end
 
 if CLIENT then
@@ -16,20 +24,34 @@ if CLIENT then
 	local scapq = {}
 	
 	local function CreateFont()
+		
 	    surface.CreateFont( "NotiFont", {
 	    font = "Roboto Cn",
 	    extended = true,
 	    size = 60,
-	    weight = 500,
+	    weight = 800,
 	    antialias = true
-    } )
+	    })
+	    
+	    surface.CreateFont( "NotiFontSmall", {
+	    font = "Roboto Cn",
+	    extended = true,
+	    size = 40,
+	    weight = 800,
+	    antialias = true
+	    })
     end
-    CreateFont() -- create font twice just in case
+    CreateFont() -- create font twice just in case   
     
 	net.Receive( "scap_data", function()
 		local s = net.ReadString()
 		local d = util.Decompress(net.ReadData(1024*1024))
 		table.insert(scapq,{s,d})
+	end)
+	
+	net.Receive("scap_seen",function()
+		local ply = player.GetBySteamID(net.ReadString())
+		chat.AddText(Color(255,255,255),ply:GetName(),Color(0,100,0)," opened your scap!")
 	end)
 	
 	local f4 = true
@@ -43,8 +65,14 @@ if CLIENT then
 	hook.Add("PlayerButtonDown","scapcheck",function(ply,butt)
 		if(butt == KEY_F4 and table.Count(scapq) != 0 and f4)then
 			f4 = false
+			
 			local playr = player.GetBySteamID(scapq[1][1])
 			local data = scapq[1][2]
+			
+			net.Start("ccap_seen")
+			net.WriteString(scapq[1][1])
+			net.SendToServer()
+			
 			local Frame = vgui.Create( "DFrame" )
 			Frame:SetSize( 500, 500 )
 			Frame:Center()
@@ -87,7 +115,9 @@ if CLIENT then
 	
 	hook.Add("PostRenderVGUI","showcap",function()
 		if(table.Count(scapq) != 0)then
-			draw.DrawText( "New capture from "..player.GetBySteamID(scapq[1][1]):GetName().."! Press F4 to view!", "NotiFont", ScrW()/2, 50, Color( 255, 255, 170, 255 ), TEXT_ALIGN_CENTER )
+			draw.DrawText( "New capture from "..player.GetBySteamID(scapq[1][1]):GetName().."!", "NotiFont", ScrW()/2, 50, Color( 255, 255, 170, 255 ), TEXT_ALIGN_CENTER )
+			draw.DrawText( "Press F4 to view!", "NotiFontSmall", ScrW()/2, 110, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER )
+
 		end
 	end)
 	
@@ -114,7 +144,9 @@ if CLIENT then
 			surface.DrawRect(0,0,ScrW(),ScrH())
 			surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
 			surface.DrawOutlinedRect(0,0,ScrW(),ScrH())
-			draw.DrawText( "Click and drag to select, right click to cancel", "NotiFont", ScrW()/2, 50, Color( 200, 200, 200, 255 ), TEXT_ALIGN_CENTER )
+			surface.DrawOutlinedRect(1,1,ScrW()-2,ScrH()-2)
+			draw.DrawText( "Click and drag to select, right click to send", "NotiFont", ScrW()/2, 50, Color( 200, 200, 200, 255 ), TEXT_ALIGN_CENTER )
+			draw.DrawText( "Escape to cancel", "NotiFontSmall", ScrW()/2, 110, Color( 220, 220, 220, 255 ), TEXT_ALIGN_CENTER )
 			gui.EnableScreenClicker(true)
 			if(input.IsButtonDown(MOUSE_LEFT))then
 				if(pressed == false)then
@@ -123,24 +155,29 @@ if CLIENT then
 				pressed = true
 				x2,y2 = gui.MousePos()
 			end
+			if(not input.IsButtonDown(MOUSE_LEFT))then
+				pressed = false
+			end
 			surface.DrawOutlinedRect(x1,y1,x2-x1,y2-y1)
-			if(input.IsButtonDown(MOUSE_RIGHT))then
-				done = true
+			if(input.IsButtonDown(KEY_ESCAPE))then
+				RunConsoleCommand("cancelselect")
 				hook.Remove("PostRenderVGUI","selectcapt")
+				done = true
 				gui.EnableScreenClicker(false)
 			end
-			if(not input.IsButtonDown(MOUSE_LEFT) and pressed == true)then
-				
-				local capt = capture(x1,y1,x2-x1,y2-y1,recipient)
-				if(capt == true)then
-					done = true
-					hook.Remove("PostRenderVGUI","selectcapt")
-					gui.EnableScreenClicker(false)
-				else
-					chat.AddText(Color(255,0,0),"Image too big to send! select a smaller area!")
-					done = true
-					hook.Remove("PostRenderVGUI","selectcapt")
-					gui.EnableScreenClicker(false)
+			if(input.IsButtonDown(MOUSE_RIGHT))then
+				for k,v in pairs(recipient)do
+					local capt = capture(x1,y1,x2-x1,y2-y1,v)
+					if(capt == true)then
+						done = true
+						hook.Remove("PostRenderVGUI","selectcapt")
+						gui.EnableScreenClicker(false)
+					else
+						chat.AddText(Color(255,0,0),"Image too big to send! select a smaller area!")
+						done = true
+						hook.Remove("PostRenderVGUI","selectcapt")
+						gui.EnableScreenClicker(false)
+					end
 				end
 			end
 		end)
@@ -150,10 +187,10 @@ if CLIENT then
 		cdata = render.Capture({
 			format = "jpeg",
 			quality = 70,
-			h = h,
-			w = w,
-			x = x,
-			y = y,
+			h = math.Clamp(h,40,ScrH()),
+			w = math.Clamp(w,40,ScrW()),
+			x = math.Clamp(x,0,ScrW()),
+			y = math.Clamp(y,0,ScrH()),
 		})
 		local compdata = util.Compress(cdata)
 		if(#compdata > 63978)then return false end
@@ -161,15 +198,16 @@ if CLIENT then
 		net.WriteString(recipient)
 		net.WriteData(compdata,#compdata)
 		net.SendToServer()
-		chat.AddText(Color(0,100,0),"Image sent to "..player.GetBySteamID(recipient):GetName().."!")
+		chat.AddText(Color(0,100,0),"Image sent to ",Color(255,255,255),player.GetBySteamID(recipient):GetName(),Color(0,100,0),"!")
 		return true
 	end
 	
 	function playerselect()
+		
 		local fram = vgui.Create( "DFrame" )
 		fram:SetSize( 200, 250 )
 		fram:Center()
-		fram:SetTitle( "Select player" )
+		fram:SetTitle( "Select player(s)" )
 		fram:SetDraggable( true )
 		fram:SetDeleteOnClose(true)
 		fram:MakePopup()
@@ -177,8 +215,8 @@ if CLIENT then
 		local plist = vgui.Create( "DListView", fram )
 		plist:SetSize(fram:GetWide()-8,fram:GetTall()-66)
 		plist:Dock( TOP )
-		plist:SetMultiSelect( false )
-		plist:AddColumn( "Player" )
+		plist:SetMultiSelect( true )
+		plist:AddColumn( "Players" )
 		for k,v in pairs(player.GetAll())do
 			plist:AddLine(v:GetName(),v:SteamID())
 		end
@@ -188,10 +226,13 @@ if CLIENT then
 		butt:SetPos( 4, fram:GetTall()-34 )
 		butt:SetSize( fram:GetWide()-8, 30 )
 		butt.DoClick = function()
-			local value = plist:GetSelected()[1]
-			if(IsValid(value))then
+			if(table.Count(plist:GetSelected()) > 0)then
+				local tabl = {}
 				fram:Close()
-				selectcapt(value:GetValue(2))
+				for k,v in pairs(plist:GetSelected()) do
+					table.insert(tabl,v:GetValue(2))
+				end
+				selectcapt(tabl)
 			end
 		end
 	end
