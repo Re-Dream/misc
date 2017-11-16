@@ -17,6 +17,22 @@ hook.Add("MingebanInitialized", "autorestart", function()
 			end
 		end
 	end)
+	hook.Add("ShutDown", "autorestart", function()
+		if not DiscordRelay or not autorestarting then return end
+
+		local msg = {
+			{
+				author = {
+					name = GetHostName(),
+					url = "http://gmlounge.us/join",
+					icon_url = "https://gmlounge.us/media/redream-logo.png"
+				},
+				description = "is autorestarting, was playing `" .. game.GetMap() .. "`.",
+				color = DiscordRelay.HexColors.Red
+			}
+		}
+		DiscordRelay.SendToDiscordRaw(nil, nil, msg)
+	end)
 
 	hook.Add("PlayerConnect", "autorestart", function()
 		if mingeban.IsCountdownActive() and autorestarting then
