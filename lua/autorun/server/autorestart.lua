@@ -32,6 +32,8 @@ hook.Add("MingebanInitialized", "autorestart", function()
 			}
 		}
 		DiscordRelay.SendToDiscordRaw(nil, nil, msg)
+
+		autorestarting = false
 	end)
 
 	hook.Add("PlayerConnect", "autorestart", function()
