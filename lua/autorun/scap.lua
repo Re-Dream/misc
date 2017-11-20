@@ -117,18 +117,18 @@ if CLIENT then
 		if(table.Count(scapq) != 0)then
 			draw.DrawText( "New capture from "..player.GetBySteamID(scapq[1][1]):GetName().."!", "NotiFont", ScrW()/2, 50, Color( 255, 255, 170, 255 ), TEXT_ALIGN_CENTER )
 			draw.DrawText( "Press F4 to view!", "NotiFontSmall", ScrW()/2, 110, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER )
-
 		end
 	end)
 	
 	function selectcapt(recipient)
 		local pressed = false
 		local x1 = 0
-		local x2 = ScrW()
+		local x2 = 0
 		local y1 = 0
-		local y2 = ScrH()
+		local y2 = 0
 		local done = false
 		local mat_Screen = Material( "pp/fb" )
+		
 		hook.Add("PostRenderVGUI","selectcapt",function()
 			render.UpdateScreenEffectTexture()
 			hook.Add("RenderScene","cancerscene",function()
@@ -165,7 +165,7 @@ if CLIENT then
 				done = true
 				gui.EnableScreenClicker(false)
 			end
-			if(input.IsButtonDown(MOUSE_RIGHT))then
+			if(input.IsButtonDown(MOUSE_RIGHT) and not(x2 - x1 == 0 or y2 - y1 == 0))then
 				for k,v in pairs(recipient)do
 					local capt = capture(x1,y1,x2-x1,y2-y1,v)
 					if(capt == true)then
