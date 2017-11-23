@@ -26,7 +26,8 @@ if CLIENT then
 		DrawReaction(tbl[1],tbl[2])
 	end)
 	
-	concommand.Add( "react", SelectReaction,0)
+	concommand.Add( "react", SelectReaction,nil,"Display a reaction image on your stupid face",0)
+	concommand.Add( "react", SelectReaction,nil,"Display a reaction image on your stupid face",0)
 	
 	hook.Add("OnPlayerChat","commandHook",function(ply,text)
 		local txt = string.Left(string.lower( text ),2)
@@ -87,7 +88,6 @@ if CLIENT then
 			local spos,ang = Entity(target):GetBonePosition(Entity(target):LookupBone( "ValveBiped.Bip01_Head1" ))
 			spos = spos+Vector(0,0,3)
 			render.DrawQuadEasy( spos+ang:Right():Angle():Forward()*8,ang:Right():Angle():Forward(), 8, 8, Color( 255, 255, 255, 255 ),180)
-			render.DrawQuadEasy( spos+ang:Right():Angle():Forward()*8,-ang:Right():Angle():Forward(), 8, 8, Color( 255, 255, 255, 255 ),180)
 		end )
 		timer.Create( "reactiontimer", 5, 1, function() hook.Remove( "PostDrawTranslucentRenderables", "test") end )
 	end
