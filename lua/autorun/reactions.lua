@@ -17,9 +17,12 @@ if CLIENT then
 	"icon16/cancel.png","icon16/computer_error.png","icon16/emoticon_evilgrin.png","icon16/emoticon_grin.png",
 	"icon16/emoticon_happy.png","icon16/emoticon_smile.png","icon16/emoticon_surprised.png","icon16/emoticon_tongue.png",
 	"icon16/emoticon_unhappy.png","icon16/emoticon_waii.png","icon16/emoticon_wink.png","icon16/error.png",
-	"icon16/fire.png","icon16/heart.png","icon16/information.png","icon16/monkey.png",
-	"icon16/music.png","icon16/rainbow.png","icon16/sound_mute.png","icon16/star.png",
-	"icon16/thumb_down.png","icon16/thumb_up.png","icon16/tick.png","icon16/water.png"}
+	"icon16/fire.png","icon16/music.png","icon16/exclamation.png","icon16/help.png",
+	"icon16/information.png","icon16/rainbow.png","icon16/sound_mute.png","icon16/star.png",
+	"icon16/thumb_down.png","icon16/thumb_up.png","icon16/tick.png","icon16/water.png",
+	"icon16/bell.png","icon16/camera.png","icon16/clock_red.png","icon16/comment.png",
+	"icon16/cross.png","icon16/cup.png","icon16/door_open.png","icon16/heart.png",
+	"icon16/eye.png","icon16/monkey.png"}
 	
 	net.Receive( "sreact", function()
 		tbl = net.ReadTable()
