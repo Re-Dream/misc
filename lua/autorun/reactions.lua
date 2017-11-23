@@ -26,8 +26,7 @@ if CLIENT then
 		DrawReaction(tbl[1],tbl[2])
 	end)
 	
-	concommand.Add( "react", SelectReaction,nil,"Display a reaction image on your stupid face",0)
-	concommand.Add( "react", SelectReaction,nil,"Display a reaction image on your stupid face",0)
+	concommand.Add( "react", SelectReaction)
 	
 	hook.Add("OnPlayerChat","commandHook",function(ply,text)
 		local txt = string.Left(string.lower( text ),2)
