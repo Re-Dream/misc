@@ -38,7 +38,11 @@ if CLIENT then
 	
 	function SelectReaction()
 		local Fram = vgui.Create( "DFrame" )
-		Fram:SetSize( 266, (table.Count(iconlist)*26)/10+61 )
+		local y = 61
+		for i = 1,math.ceil(table.Count(iconlist)/10) do
+			y = y+26
+		end
+		Fram:SetSize( 266, y )
 		Fram:Center()
 		Fram:SetTitle( "Select reaction" )
 		Fram:ShowCloseButton(false)
