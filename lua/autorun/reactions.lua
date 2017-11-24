@@ -38,7 +38,7 @@ if CLIENT then
 	
 	function SelectReaction()
 		local Fram = vgui.Create( "DFrame" )
-		Fram:SetSize( 266, (table.Count(iconlist)*24)/10+70 )
+		Fram:SetSize( 266, (table.Count(iconlist)*26)/10+61 )
 		Fram:Center()
 		Fram:SetTitle( "Select reaction" )
 		Fram:ShowCloseButton(false)
@@ -46,13 +46,13 @@ if CLIENT then
 		
 		local butt = vgui.Create( "DButton", Fram )
 		butt:SetText("Close")
-		butt:SetSize(Fram:GetWide()-8,31)
-		butt:SetPos(4,Fram:GetTall()-35)
+		butt:SetSize(Fram:GetWide()-8,30)
+		butt:SetPos(4,Fram:GetTall()-34)
 		butt.DoClick = function()
 			Fram:Close()
 		end
 		
-		local y = 28
+		local y = 27
 		local x = 4
 		
 		for k,v in pairs(iconlist) do
