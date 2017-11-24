@@ -29,13 +29,6 @@ if CLIENT then
 		DrawReaction(tbl[1],tbl[2])
 	end)
 	
-	hook.Add("OnPlayerChat","commandHook",function(ply,text)
-		local txt = string.Left(string.lower( text ),2)
-		if (txt == "!r" or txt == ".r" or txt == "/r" or txt == "!react" or txt == ".react" or txt == "/react") and (ply == LocalPlayer()) then
-			SelectReaction()
-		end
-	end)
-	
 	function SelectReaction()
 		local Fram = vgui.Create( "DFrame" )
 		local y = 61
@@ -77,6 +70,13 @@ if CLIENT then
 	end
 
 	concommand.Add( "react", SelectReaction)
+	
+	hook.Add("OnPlayerChat","commandHook",function(ply,text)
+		local txt = string.Left(string.lower( text ),2)
+		if (txt == "!r" or txt == ".r" or txt == "/r" or txt == "!react" or txt == ".react" or txt == "/react") and (ply == LocalPlayer()) then
+			SelectReaction()
+		end
+	end)
 
 	function SendReaction(target,num)
 		net.Start("creact")
