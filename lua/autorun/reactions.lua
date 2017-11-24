@@ -65,9 +65,8 @@ if CLIENT then
 			bttn:SetSize(24,24)
 			bttn:SetPos(x,y)
 			bttn:SetIcon(v)
-			bttn.ass = k
 			bttn.DoClick = function()
-				SendReaction(LocalPlayer():EntIndex(),bttn.ass)
+				SendReaction(LocalPlayer():EntIndex(),k)
 			end
 			x = x+26
 		end
