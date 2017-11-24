@@ -84,15 +84,22 @@ if CLIENT then
 	end
 	
 	function DrawReaction(target,num)
+		local stime = SysTime()
 		hook.Remove( "PostDrawTranslucentRenderables", "test")
 		local mat1 = Material(iconlist[num])
 		mat1 = Material(iconlist[num])
+		local minus = 0
 		hook.Add( "PostDrawTranslucentRenderables", "test", function()
+			local timeex = math.Clamp((math.sin((SysTime()-stime)*(math.pi/5))*10)*255,0,255)
 			render.SetMaterial( mat1 )
 			local spos,ang = Entity(target):GetBonePosition(Entity(target):LookupBone( "ValveBiped.Bip01_Head1" ))
 			spos = spos+Vector(0,0,3)
-			render.DrawQuadEasy( spos+ang:Right():Angle():Forward()*8,ang:Right():Angle():Forward(), 8, 8, Color( 255, 255, 255, 255 ),180)
+			render.DrawQuadEasy( spos+ang:Right():Angle():Forward()*8,ang:Right():Angle():Forward(), 8, 8, Color( 255, 255, 255, timeex ),180)
 		end )
-		timer.Create( "reactiontimer", 5, 1, function() hook.Remove( "PostDrawTranslucentRenderables", "test") end )
+		timer.Create( "reactionalpha0", 5, 1, function()
+			timer.Create( "reactionremover", 1, 1, function()
+				hook.Remove( "PostDrawTranslucentRenderables", "test")
+			end )
+		end )
 	end
 end
