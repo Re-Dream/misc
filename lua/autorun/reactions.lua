@@ -83,7 +83,7 @@ if CLIENT then
 		net.SendToServer()
 	end
 	
-	function Drawreaction(target,matr)
+	function DrawReaction(target,matr)
 		local stime = SysTime()
 		local minus = 0
 		hook.Add( "PostDrawTranslucentRenderables", tostring(target), function()
