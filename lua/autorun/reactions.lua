@@ -1,4 +1,4 @@
-
+--
 if SERVER then
 	util.AddNetworkString("creact")
 	util.AddNetworkString("sreact")
@@ -94,8 +94,7 @@ if CLIENT then
 				local timeex = math.Clamp((math.sin((SysTime()-stime)*(math.pi/5))*10)*255,0,255)
 				if(target == LocalPlayer():EntIndex())then
 					cam.Start2D()
-						surface.SetMaterial(mat1)
-						surface.DrawTexturedRect( ltimeex, (ScrH()/2)-16, 64, 64 )
+						render.DrawScreenQuadEx( ltimeex, (ScrH()/2)-16, 64, 64 )
 					cam.End2D()
 				end
 				local spos,ang = Entity(target):GetBonePosition(Entity(target):LookupBone( "ValveBiped.Bip01_Head1" ))
@@ -103,7 +102,7 @@ if CLIENT then
 				render.DrawQuadEasy( spos+ang:Right():Angle():Forward()*8,ang:Right():Angle():Forward(), 8, 8, Color( 255, 255, 255, timeex ),180)
 		end )
 		timer.Create( tostring(target).."alpha0", 6, 1, function()
-			hook.Remove( "PostDrawTranslucentRenderables", tostring(target))
+			hook.Remove("PostDrawTranslucentRenderables", tostring(target))
 		end )
 	end
 end
