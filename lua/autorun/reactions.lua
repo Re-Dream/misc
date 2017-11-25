@@ -90,8 +90,12 @@ if CLIENT then
 		mat1 = Material(iconlist[num])
 		local minus = 0
 		hook.Add( "PostDrawTranslucentRenderables", "test", function()
-			local timeex = math.Clamp((math.sin((SysTime()-stime)*(math.pi/5))*10)*255,0,255)
 			render.SetMaterial( mat1 )
+			local ltimeex = math.Clamp(((math.sin((SysTime()-stime)*(math.pi/5))*10)*64)-64,-64,0)
+			local timeex = math.Clamp((math.sin((SysTime()-stime)*(math.pi/5))*10)*255,0,255)
+			if(target == LocalPlayer():EntIndex())then
+				render.DrawScreenQuadEx( ltimeex, (ScrH()/2)-16, 64, 64 )
+			end
 			local spos,ang = Entity(target):GetBonePosition(Entity(target):LookupBone( "ValveBiped.Bip01_Head1" ))
 			spos = spos+Vector(0,0,3)
 			render.DrawQuadEasy( spos+ang:Right():Angle():Forward()*8,ang:Right():Angle():Forward(), 8, 8, Color( 255, 255, 255, timeex ),180)
