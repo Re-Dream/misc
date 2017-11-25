@@ -83,27 +83,27 @@ if CLIENT then
 		net.SendToServer()
 	end
 	
-	function DrawReaction(target,num)
+	function Drawreaction(target,matr)
 		local stime = SysTime()
-		hook.Remove( "PostDrawTranslucentRenderables", "test")
-		local mat1 = Material(iconlist[num])
-		mat1 = Material(iconlist[num])
 		local minus = 0
-		hook.Add( "PostDrawTranslucentRenderables", "test", function()
-			render.SetMaterial( mat1 )
-			local ltimeex = math.Clamp(((math.sin((SysTime()-stime)*(math.pi/5))*10)*64)-64,-64,0)
-			local timeex = math.Clamp((math.sin((SysTime()-stime)*(math.pi/5))*10)*255,0,255)
-			if(target == LocalPlayer():EntIndex())then
-				render.DrawScreenQuadEx( ltimeex, (ScrH()/2)-16, 64, 64 )
-			end
-			local spos,ang = Entity(target):GetBonePosition(Entity(target):LookupBone( "ValveBiped.Bip01_Head1" ))
-			spos = spos+Vector(0,0,3)
-			render.DrawQuadEasy( spos+ang:Right():Angle():Forward()*8,ang:Right():Angle():Forward(), 8, 8, Color( 255, 255, 255, timeex ),180)
+		hook.Add( "PostDrawTranslucentRenderables", tostring(target), function()
+				local mat1 = Material(iconlist[matr])
+				mat1 = Material(iconlist[matr])
+				render.SetMaterial( mat1 )
+				local ltimeex = math.Clamp(((math.sin((SysTime()-stime)*(math.pi/5))*10)*64)-64,-64,0)
+				local timeex = math.Clamp((math.sin((SysTime()-stime)*(math.pi/5))*10)*255,0,255)
+				if(target == LocalPlayer():EntIndex())then
+					cam.Start2D()
+						surface.SetMaterial(mat1)
+						surface.DrawTexturedRect( ltimeex, (ScrH()/2)-16, 64, 64 )
+					cam.End2D()
+				end
+				local spos,ang = Entity(target):GetBonePosition(Entity(target):LookupBone( "ValveBiped.Bip01_Head1" ))
+				spos = spos+Vector(0,0,3)
+				render.DrawQuadEasy( spos+ang:Right():Angle():Forward()*8,ang:Right():Angle():Forward(), 8, 8, Color( 255, 255, 255, timeex ),180)
 		end )
-		timer.Create( "reactionalpha0", 5, 1, function()
-			timer.Create( "reactionremover", 1, 1, function()
-				hook.Remove( "PostDrawTranslucentRenderables", "test")
-			end )
+		timer.Create( tostring(target).."alpha0", 6, 1, function()
+			hook.Remove( "PostDrawTranslucentRenderables", tostring(target))
 		end )
 	end
 end
