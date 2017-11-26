@@ -128,7 +128,8 @@ if CLIENT then
 		local y2 = 0
 		local done = false
 		local mat_Screen = Material( "pp/fb" )
-		
+		local a = 255
+
 		hook.Add("PostRenderVGUI","selectcapt",function()
 			render.UpdateScreenEffectTexture()
 			hook.Add("RenderScene","cancerscene",function()
@@ -145,8 +146,8 @@ if CLIENT then
 			surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
 			surface.DrawOutlinedRect(0,0,ScrW(),ScrH())
 			surface.DrawOutlinedRect(1,1,ScrW()-2,ScrH()-2)
-			draw.DrawText( "Click and drag to select, right click to send", "NotiFont", ScrW()/2, 50, Color( 200, 200, 200, 255 ), TEXT_ALIGN_CENTER )
-			draw.DrawText( "Escape to cancel", "NotiFontSmall", ScrW()/2, 110, Color( 220, 220, 220, 255 ), TEXT_ALIGN_CENTER )
+			draw.DrawText( "Click and drag to select, right click to send", "NotiFont", ScrW()/2, 50, Color( 200, 200, 200, a ), TEXT_ALIGN_CENTER )
+			draw.DrawText( "Escape to cancel", "NotiFontSmall", ScrW()/2, 110, Color( 220, 220, 220, a ), TEXT_ALIGN_CENTER )
 			gui.EnableScreenClicker(true)
 			if(input.IsButtonDown(MOUSE_LEFT))then
 				if(pressed == false)then
@@ -166,18 +167,14 @@ if CLIENT then
 				gui.EnableScreenClicker(false)
 			end
 			if(input.IsButtonDown(MOUSE_RIGHT) and not(x2 - x1 == 0 or y2 - y1 == 0))then
-				for k,v in pairs(recipient)do
-					local capt = capture(x1,y1,x2-x1,y2-y1,v)
-					if(capt == true)then
-						done = true
-						hook.Remove("PostRenderVGUI","selectcapt")
-						gui.EnableScreenClicker(false)
-					else
-						chat.AddText(Color(255,0,0),"Image too big to send! select a smaller area!")
-						done = true
-						hook.Remove("PostRenderVGUI","selectcapt")
-						gui.EnableScreenClicker(false)
-					end
+				done = true
+				hook.Remove("PostRenderVGUI","selectcapt")
+				if(table.Count(recipient) == 0)then
+					playerselect(x1,y1,x2-x1,y2-y1)
+				else
+					timer.Simple(0.1,function()
+						capture(x1,y1,x2-x1,y2-y1,recipient[1])
+					end)
 				end
 			end
 		end)
@@ -193,16 +190,20 @@ if CLIENT then
 			y = math.Clamp(y,0,ScrH()),
 		})
 		local compdata = util.Compress(cdata)
-		if(#compdata > 63978)then return false end
+		if(#compdata > 63978)then
+			chat.AddText(Color(255,0,0),"Image too big to send! select a smaller area!")
+			gui.EnableScreenClicker(false)
+			return
+		end
 		net.Start("ccap_data")
 		net.WriteString(recipient)
 		net.WriteData(compdata,#compdata)
 		net.SendToServer()
 		chat.AddText(Color(0,100,0),"Image sent to ",Color(255,255,255),player.GetBySteamID(recipient):GetName(),Color(0,100,0),"!")
-		return true
+		gui.EnableScreenClicker(false)
 	end
 	
-	function playerselect()
+	function playerselect(x1,y1,w,h)
 		
 		local fram = vgui.Create( "DFrame" )
 		fram:SetSize( 200, 250 )
@@ -226,13 +227,19 @@ if CLIENT then
 		butt:SetPos( 4, fram:GetTall()-34 )
 		butt:SetSize( fram:GetWide()-8, 30 )
 		butt.DoClick = function()
+
+			local tbl = {}
 			if(table.Count(plist:GetSelected()) > 0)then
-				local tabl = {}
 				fram:Close()
 				for k,v in pairs(plist:GetSelected()) do
-					table.insert(tabl,v:GetValue(2))
+					table.insert(tbl,v:GetValue(2))
 				end
-				selectcapt(tabl)
+
+				for k,v in pairs(tbl) do
+					timer.Simple(0.1,function()
+						capture(x1,y1,w,h,v)
+					end)
+				end
 			end
 		end
 	end
@@ -248,7 +255,7 @@ if CLIENT then
 					end
 				end
 			else
-				playerselect()
+				selectcapt({})
 			end
 		end
 	end)
