@@ -71,7 +71,7 @@ if CLIENT then
 
 	concommand.Add( "react", SelectReaction)
 	
-	hook.Add("OnPlayerChat","commandHook",function(ply,txt)
+	hook.Add("OnPlayerChat","ReactCommand",function(ply,txt)
 		if (txt == "!r" or txt == ".r" or txt == "/r" or txt == "!react" or txt == ".react" or txt == "/react") and (ply == LocalPlayer()) then
 			SelectReaction()
 		end
