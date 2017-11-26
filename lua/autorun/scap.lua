@@ -170,11 +170,25 @@ if CLIENT then
 			if(input.IsButtonDown(MOUSE_RIGHT) and not(x2 - x1 == 0 or y2 - y1 == 0))then
 				a = 0
 				done = true
+				local x = x1
+				local y = y1
+				local wide = x2-x1
+				local tall = y2-y1
+
+				if(wide <0)then
+					x = x2-1
+					wide = (x1-x2)+2
+				end
+				if(tall <0)then
+					y = y2-1
+					tall = (y1-y2)+2
+				end
+
 				hook.Remove("PostRenderVGUI","selectcapt")
 				if(table.Count(recipient) == 0)then
-					capture(x1,y1,x2-x1,y2-y1,"")
+					capture(x,y,wide,tall,"")
 				else
-					capture(x1,y1,x2-x1,y2-y1,recipient[1])
+					capture(x,y,wide,tall,recipient[1])
 				end
 			end
 		end)
