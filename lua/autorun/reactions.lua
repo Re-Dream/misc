@@ -28,27 +28,33 @@ if CLIENT then
 		tbl = net.ReadTable()
 		DrawReaction(tbl[1],tbl[2])
 	end)
+
+	local Cmenumenu = nil
+
+	hook.Add("OnContextMenuOpen","ReactionMenuOpen",function()
+		Cmenumenu = SelectReaction(true)
+		Cmenumenu:MakePopup()
+	end)
+
+	hook.Add("OnContextMenuClose","ReactionMenuClose",function()
+		Cmenumenu:Close()
+	end)
 	
-	function SelectReaction()
-		local Fram = vgui.Create( "DFrame" )
-		local y = 61
+	function SelectReaction(cmenu)
+		local ReactionSelectionFrame = vgui.Create( "DFrame" )
+		local y = 29
 		for i = 1,math.ceil(table.Count(iconlist)/10) do
 			y = y+26
 		end
-		Fram:SetSize( 266, y )
-		Fram:Center()
-		Fram:SetTitle( "Select reaction" )
-		Fram:ShowCloseButton(false)
-		Fram:MakePopup()
-		
-		local butt = vgui.Create( "DButton", Fram )
-		butt:SetText("Close")
-		butt:SetSize(Fram:GetWide()-8,30)
-		butt:SetPos(4,Fram:GetTall()-34)
-		butt.DoClick = function()
-			Fram:Close()
-		end
-		
+		ReactionSelectionFrame:SetSize( 266, y )
+		ReactionSelectionFrame:SetTitle( "Select reaction" )
+		ReactionSelectionFrame:ShowCloseButton(false)
+		ReactionSelectionFrame:SetDraggable(!cmenu)
+		ReactionSelectionFrame:MakePopup()
+		ReactionSelectionFrame:SetPos(0,ScrH()-y)
+		ReactionSelectionFrame:SetKeyboardInputEnabled(false)
+		ReactionSelectionFrame:SetMouseInputEnabled(true)
+
 		local y = 27
 		local x = 4
 		
@@ -57,7 +63,7 @@ if CLIENT then
 				x = 4
 				y = y+26
 			end
-			local bttn = vgui.Create( "DButton", Fram )
+			local bttn = vgui.Create( "DButton", ReactionSelectionFrame )
 			bttn:SetText("")
 			bttn:SetSize(24,24)
 			bttn:SetPos(x,y)
@@ -67,15 +73,8 @@ if CLIENT then
 			end
 			x = x+26
 		end
+		return ReactionSelectionFrame
 	end
-
-	concommand.Add( "react", SelectReaction)
-	
-	hook.Add("OnPlayerChat","ReactCommand",function(ply,txt)
-		if (txt == "!r" or txt == ".r" or txt == "/r" or txt == "!react" or txt == ".react" or txt == "/react") and (ply == LocalPlayer()) then
-			SelectReaction()
-		end
-	end)
 
 	function SendReaction(target,num)
 		net.Start("creact")
