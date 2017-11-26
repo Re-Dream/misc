@@ -54,6 +54,7 @@ The Lounge]]
 	timer.Create(tag, 15, 0, function()
 		hostname.Pick()
 	end)
+	timer.Destroy("HostnameThink")
 
 	function hostname.StartTimer()
 		return timer.Start(tag)
