@@ -65,7 +65,7 @@ if CLIENT then
 	hook.Add("PlayerButtonDown","scapcheck",function(ply,butt)
 		if(butt == KEY_F4 and table.Count(scapq) != 0 and f4)then
 			f4 = false
-			
+
 			local playr = player.GetBySteamID(scapq[1][1])
 			local data = scapq[1][2]
 			
@@ -79,6 +79,9 @@ if CLIENT then
 			Frame:SetTitle("Capture from "..playr:GetName())
 			Frame:MakePopup()
 			Frame:SetDeleteOnClose(true)
+			Frame.OnClose = function()
+				table.remove(scapq,1)
+			end
 			
 			local butt = vgui.Create( "DButton", Frame )
 			butt:SetText("Save!")
@@ -109,7 +112,6 @@ if CLIENT then
 				butt:SetPos(5,Frame:GetTall()-35)
 			end)
 	    	img:SetHTML('<body style="overflow:hidden"><img src="data:image/jpeg;base64,'..util.Base64Encode(data)..'" onload="gmod.size(this.width,this.height)"></body>')
-	    	table.remove(scapq,1)
 		end
 	end)
 	
