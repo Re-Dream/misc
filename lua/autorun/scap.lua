@@ -87,16 +87,15 @@ if CLIENT then
 			butt:SetText("Save!")
 			butt.DoClick = function()
 				
-				if(file.Exists( "CAPTURE.jpg", "DATA" ))then
-					file.Delete("CAPTURE.jpg")
-				end
-				
-				local f = file.Open( "CAPTURE.jpg", "wb", "DATA" )
+				file.CreateDir("captures")
+				local fstr = SysTime()..playr:SteamID64()
+				print(fstr)			
+				local f = file.Open( "captures/"..fstr..".jpg", "wb", "DATA" )
 				
 				f:Write( data )
 				f:Close()
 				
-				chat.AddText(Color(0,100,0),"Image saved! Check your",Color(255,255,255)," GarrysMod/garrysmod/data ",Color(0,100,0),"folder!")
+				chat.AddText(Color(0,100,0),"Image saved! Check your",Color(255,255,255)," GarrysMod/garrysmod/data/captures ",Color(0,100,0),"folder!")
 			end
 			
 			local img = vgui.Create( "DHTML", Frame )
@@ -169,14 +168,13 @@ if CLIENT then
 				gui.EnableScreenClicker(false)
 			end
 			if(input.IsButtonDown(MOUSE_RIGHT) and not(x2 - x1 == 0 or y2 - y1 == 0))then
+				a = 0
 				done = true
 				hook.Remove("PostRenderVGUI","selectcapt")
 				if(table.Count(recipient) == 0)then
-					playerselect(x1,y1,x2-x1,y2-y1)
+					capture(x1,y1,x2-x1,y2-y1,"")
 				else
-					timer.Simple(0.1,function()
-						capture(x1,y1,x2-x1,y2-y1,recipient[1])
-					end)
+					capture(x1,y1,x2-x1,y2-y1,recipient[1])
 				end
 			end
 		end)
@@ -197,15 +195,19 @@ if CLIENT then
 			gui.EnableScreenClicker(false)
 			return
 		end
-		net.Start("ccap_data")
-		net.WriteString(recipient)
-		net.WriteData(compdata,#compdata)
-		net.SendToServer()
-		chat.AddText(Color(0,100,0),"Image sent to ",Color(255,255,255),player.GetBySteamID(recipient):GetName(),Color(0,100,0),"!")
-		gui.EnableScreenClicker(false)
+		if(recipient == "")then
+			playerselect(compdata)
+		else
+			net.Start("ccap_data")
+			net.WriteString(recipient)
+			net.WriteData(compdata,#compdata)
+			net.SendToServer()
+			chat.AddText(Color(0,100,0),"Image sent to ",Color(255,255,255),player.GetBySteamID(recipient):GetName(),Color(0,100,0),"!")
+			gui.EnableScreenClicker(false)
+		end
 	end
 	
-	function playerselect(x1,y1,w,h)
+	function playerselect(dat)
 		
 		local fram = vgui.Create( "DFrame" )
 		fram:SetSize( 200, 250 )
@@ -231,6 +233,8 @@ if CLIENT then
 		butt.DoClick = function()
 
 			local tbl = {}
+			local rstr = ""
+			local alt = ""
 			if(table.Count(plist:GetSelected()) > 0)then
 				fram:Close()
 				for k,v in pairs(plist:GetSelected()) do
@@ -238,9 +242,18 @@ if CLIENT then
 				end
 
 				for k,v in pairs(tbl) do
-					timer.Simple(0.1,function()
-						capture(x1,y1,w,h,v)
-					end)
+					net.Start("ccap_data")
+					net.WriteString(v)
+					net.WriteData(dat,#dat)
+					net.SendToServer()
+					rstr = rstr.."\n"..player.GetBySteamID(v):GetName()
+					alt = player.GetBySteamID(v):GetName()
+					gui.EnableScreenClicker(false)
+				end
+				if(table.Count(tbl)!=1)then
+					chat.AddText(Color(0,100,0),"Image sent to: ",Color(255,255,255),rstr)
+				else
+					chat.AddText(Color(0,100,0),"Image sent to ",Color(255,255,255),alt,Color(0,100,0),"!")
 				end
 			end
 		end
