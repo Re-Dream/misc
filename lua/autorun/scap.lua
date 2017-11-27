@@ -1,3 +1,4 @@
+--
 if SERVER then
 	util.AddNetworkString("ccap_data")
 	util.AddNetworkString("scap_data")
