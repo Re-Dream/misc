@@ -32,15 +32,17 @@ if CLIENT then
 	local Cmenumenu = nil
 
 	hook.Add("OnContextMenuOpen","ReactionMenuOpen",function()
-		Cmenumenu = SelectReaction(true)
-		Cmenumenu:MakePopup()
+		if(Cmenumenu == nil)then
+			Cmenumenu = SelectReaction()
+		end
+		Cmenumenu:Show()
 	end)
 
 	hook.Add("OnContextMenuClose","ReactionMenuClose",function()
-		Cmenumenu:Close()
+		Cmenumenu:Hide()
 	end)
 	
-	function SelectReaction(cmenu)
+	function SelectReaction()
 		local ReactionSelectionFrame = vgui.Create( "DFrame" )
 		local y = 29
 		for i = 1,math.ceil(table.Count(iconlist)/10) do
@@ -52,8 +54,10 @@ if CLIENT then
 		ReactionSelectionFrame:SetDraggable(true)
 		ReactionSelectionFrame:MakePopup()
 		ReactionSelectionFrame:SetPos(0,ScrH()-y)
+		ReactionSelectionFrame:SetDeleteOnClose(false)
 		ReactionSelectionFrame:SetKeyboardInputEnabled(false)
 		ReactionSelectionFrame:SetMouseInputEnabled(true)
+		ReactionSelectionFrame:MakePopup()
 
 		local y = 27
 		local x = 4
