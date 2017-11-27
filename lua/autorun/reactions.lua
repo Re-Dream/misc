@@ -49,7 +49,7 @@ if CLIENT then
 		ReactionSelectionFrame:SetSize( 266, y )
 		ReactionSelectionFrame:SetTitle( "Select reaction" )
 		ReactionSelectionFrame:ShowCloseButton(false)
-		ReactionSelectionFrame:SetDraggable(!cmenu)
+		ReactionSelectionFrame:SetDraggable(true)
 		ReactionSelectionFrame:MakePopup()
 		ReactionSelectionFrame:SetPos(0,ScrH()-y)
 		ReactionSelectionFrame:SetKeyboardInputEnabled(false)
