@@ -137,6 +137,8 @@ if CLIENT then
 	}
 
 	hook.Add("OnPlayerChat", tag .. "_syntax", function(ply, txt, tc, dead)
+		if not IsValid(ply) then return end
+
 		local prefix = txt:match(prefix)
 		if prefix then
 			local method = txt:lower():match("^" .. prefix .. "(%w+)%s?")
@@ -151,7 +153,7 @@ if CLIENT then
 				code = code:sub(name:len() + 2)
 			end
 
-			local stuff = { team.GetColor(ply.Team and ply:Team() or 1001), ply:Nick(), " ", Color(160, 170, 220), methodInfo.a, gray, "@", methodInfo.c, name, gray, ": " }
+			local stuff = { team.GetColor(ply.Team and ply:Team() or 1001), ply.Nick and ply:Nick() or "???", " ", Color(160, 170, 220), methodInfo.a, gray, "@", methodInfo.c, name, gray, ": " }
 			-- stuff[#stuff + 1] = code
 
 			local highlight = SyntaxHighlight(code)
