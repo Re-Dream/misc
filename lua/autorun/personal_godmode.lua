@@ -111,9 +111,9 @@ elseif CLIENT then
 			else
 				local availableModes = {}
 				for i = 0, 3 do
-					availableModes[#availableModes + 1] = "\n\t" .. language.GetPhrase(tag .. "_" .. i)
+					availableModes[#availableModes + 1] = "\t" .. i .. ": " .. language.GetPhrase(tag .. "_" .. i)
 				end
-				chat.AddText(w, "God modes available:", g, table.concat(availableModes, ""), w, "\nMore options in the ", g, "Spawn Menu", w, " > ", g, "Utilities", w, " > ", g, "God Mode", w, " menu!")
+				chat.AddText(w, "God modes available:\n", g, table.concat(availableModes, "\n"), w, "\nMore options in the ", g, "Spawn Menu", w, " > ", g, "Utilities", w, " > ", g, "God Mode", w, " menu!")
 			end
 		end
 	end)
