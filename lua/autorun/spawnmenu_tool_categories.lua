@@ -4,13 +4,13 @@ spawnmenu._AddToolCategory   = spawnmenu._AddToolCategory or spawnmenu.AddToolCa
 
 local redirect = function(tab)
 	if tab:lower() == "options" then return "Utilities" end
-    return tab
+	return tab
 end
 
 spawnmenu.AddToolMenuOption = function(tab, ...)
-    spawnmenu._AddToolMenuOption(redirect(tab), ...)
+	spawnmenu._AddToolMenuOption(redirect(tab), ...)
 end
 spawnmenu.AddToolCategory = function(tab, ...)
-    spawnmenu._AddToolCategory(redirect(tab), ...)
+	spawnmenu._AddToolCategory(redirect(tab), ...)
 end
 
