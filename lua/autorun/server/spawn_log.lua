@@ -39,7 +39,7 @@ local ignoreTools = {
 local function LogTool(ply, trace, tool)
 	if ignoreTools[tool] then return end
 	local pos = NoVectorDecimals(tostring(trace.HitPos))
-	Log("TOOL", ply, w, tool, g, " " .. tostring(trace.Entity) .. " @ " .. po)
+	Log("TOOL", ply, w, tool, g, " " .. tostring(trace.Entity) .. " @ " .. pos)
 	prev = tool
 	timer.Simple(0, function() prev = nil end)
 end
