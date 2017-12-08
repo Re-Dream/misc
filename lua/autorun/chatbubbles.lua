@@ -176,7 +176,7 @@ if CLIENT then
 			end
 		end
 		if mono then
-			scale = math.min(0.25, #lines > 1 and (largestW / txtH) * 0.25 or 0.25)
+			scale = math.min(0.175, #lines > 1 and (largestW / txtH) * 0.25 or 0.175)
 		else
 			scale = 0.066
 		end
