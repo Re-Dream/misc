@@ -25,11 +25,13 @@ hook.Add("Think", tag, function()
 		if GetConVarNumber("developer") == 1 then
 			print("Lost focus")
 		end
+		hook.Run("OnFocusChanged", false)
 		CreatePanel()
 	elseif HasFocus() and IsValid(focus_panel) then
 		if GetConVarNumber("developer") == 1 then
 			print("Gained focus")
 		end
+		hook.Run("OnFocusChanged", true)
 		RemovePanel()
 	end
 end)

@@ -119,6 +119,7 @@ if CLIENT then
 			else
 				pos, ang = Vector(ply.x, ply.y, ply.z), Angle(_ang.p, _ang.y, _ang.r)
 			end
+			ang.p = ang.p * 0.125
 			ang:RotateAroundAxis(ang:Up(), 90)
 			ang:RotateAroundAxis(ang:Forward(), 90)
 
@@ -162,20 +163,26 @@ if CLIENT then
 		return lines
 	end
 	local function Draw(pos, ang, txt, mono, col, behind)
-		local lines = istable(txt) and txt or (mono and { txt } or WordWrap(txt))
-		cam.Start3D2D(pos, ang, mono and 0.25 or 0.066)
+		local lines = istable(txt) and txt or (mono and txt:Split("\n") or WordWrap(txt))
+		local scale
+		surface.SetFont(mono and "defaultfixed" or tag)
+		local _, lineH = surface.GetTextSize("W")
+		local txtH = lineH * #lines
+		local largestW = 0
+		for _, str in next, lines do
+			local txtW, _ = surface.GetTextSize(str)
+			if largestW < txtW then
+				largestW = txtW
+			end
+		end
+		if mono then
+			scale = math.min(0.25, (largestW / txtH) * 0.25)
+		else
+			scale = 0.066
+		end
+		cam.Start3D2D(pos, ang, scale)
 			render.PushFilterMag(TEXFILTER.NONE)
 
-			surface.SetFont(mono and "defaultfixed" or tag)
-			local _, lineH = surface.GetTextSize("W")
-			local txtH = lineH * #lines
-			local largestW = 0
-			for _, str in next, lines do
-				local txtW, _ = surface.GetTextSize(str)
-				if largestW < txtW then
-					largestW = txtW
-				end
-			end
 			local margin = mono and 3 or 9
 			local h = math.max(4, txtH) + margin * 2
 
@@ -188,6 +195,7 @@ if CLIENT then
 			end
 
 			for i, str in next, lines do
+				str = str:gsub("\t", "   ")
 				surface.SetTextPos(margin - (behind and largestW or 0), -(lineH * (#lines - 1)) + margin + lineH * (i - 1))
 				surface.SetTextColor(col and col or Color(235, 235, 255, 255))
 				surface.DrawText(str)
@@ -234,7 +242,7 @@ if CLIENT then
 						else
 							txt = bub.text
 						end
-						Draw(pos, ang, txt, dots, col, behind)
+						Draw(pos, ang, txt, dots or txt:match("\n"), col, behind)
 					end
 				end
 			end)
