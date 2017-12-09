@@ -6,7 +6,7 @@ if SERVER then
 
 	net.Receive(tag, function(_, ply)
 		local typing = net.ReadBool()
-		local text = net.ReadData(1024*1024)
+		local text = net.ReadData(1024 * 1024)
 
 		ply.Typing = typing and (util.Decompress(text) or "") or nil
 
@@ -22,6 +22,10 @@ if SERVER then
 	function PLAYER:GetTypingMessage()
 		return self.Typing
 	end
+
+	function PLAYER:IsTyping()
+		return self.Typing and true or false
+	end
 end
 
 if CLIENT then
@@ -30,7 +34,7 @@ if CLIENT then
 	net.Receive(tag, function()
 		local ply = net.ReadEntity()
 		local typing = net.ReadBool()
-		local text = net.ReadData(1024*1024) or ""
+		local text = net.ReadData(1024 * 1024) or ""
 		text = util.Decompress(text) or ""
 
 		ply.Chatbubbles = ply.Chatbubbles or {}
@@ -48,7 +52,7 @@ if CLIENT then
 				started = true
 				net.Start(tag)
 					net.WriteBool(true)
-					net.WriteData("", #(""))
+					net.WriteData("", #"")
 				net.SendToServer()
 			end)
 		end
@@ -56,7 +60,7 @@ if CLIENT then
 			started = true
 			net.Start(tag)
 				net.WriteBool(true)
-				net.WriteData("", #(""))
+				net.WriteData("", #"")
 			net.SendToServer()
 			-- print("StartChat")
 		end)
@@ -64,7 +68,7 @@ if CLIENT then
 			started = false
 			net.Start(tag)
 				net.WriteBool(false)
-				net.WriteData("", #(""))
+				net.WriteData("", #"")
 			net.SendToServer()
 			-- print("FinishChat")
 		end)
@@ -251,5 +255,14 @@ if CLIENT then
 			end
 		cam.End3D()
 	end)
+
+	local PLAYER = FindMetaTable("Player")
+
+	function PLAYER:IsTyping()
+		local bub = self.Chatbubbles
+		if not bub then return false end
+
+		return bub.typing and true or false
+	end
 end
 
