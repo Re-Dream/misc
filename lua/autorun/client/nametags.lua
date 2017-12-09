@@ -67,6 +67,7 @@ hook.Add("PostDrawTranslucentRenderables", tag, function()
 		local shouldDraw = false
 		shouldDraw = not ply:Crouching() and true or shouldDraw
 		shouldDraw = (not isLply or ply:ShouldDrawLocalPlayer()) and shouldDraw or false
+		shouldDraw = not ply:GetNoDraw() and shouldDraw or false
 
 		local alpha = 1
 		local dist = ply:GetPos():Distance(EyePos())
