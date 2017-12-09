@@ -7,6 +7,7 @@ if SERVER then
 	net.Receive("ccap_data",function(len,ply)
 		local recipient = net.ReadString()
 		local data = net.ReadData(1024*1024)
+        if(!IsValid(data))then return end
 		net.Start("scap_data")
 		net.WriteString(ply:SteamID())
 		net.WriteData(data,string.len(data))
