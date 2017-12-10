@@ -68,7 +68,7 @@ if CLIENT then
 			local tcol = team.GetColor(1001)
 			chat.AddText(Color(127, 255, 127), bullet, " ", tcol, info.name, Color(127, 127, 127), " (" .. info.steamid .. ") ", Color(210, 210, 225), "is ", Color(127, 255, 127), "joining", Color(210, 210, 225), " the server!")
 		else
-			chat.AddText(Color(255, 127, 127), bullet, " ", Color(210, 210, 225), info.name, Color(127, 127, 127), " (" .. info.steamid .. ") ", Color(255, 127, 127), "left", Color(210, 210, 225), " the server!", Color(127, 127, 127), " (" .. info.reason .. ")")
+			chat.AddText(Color(255, 127, 127), bullet, " ", Color(210, 210, 225), info.name, Color(127, 127, 127), " (" .. info.steamid or "BOT" .. ") ", Color(255, 127, 127), "left", Color(210, 210, 225), " the server!", Color(127, 127, 127), " (" .. info.reason .. ")")
 		end
 	end)
 
