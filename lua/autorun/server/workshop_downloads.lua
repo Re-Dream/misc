@@ -13,6 +13,8 @@ local maps = {
 	["gm_abstraction_ex-sunset"] = 740691120,
 	["gm_gmall"] = 207060996,
 	["gm_excess_island"] = 115250988,
+	["gm_genesis"] = 266666023,
+	["gm_overgrown_abstract"] = 1228338560
 }
 
 for name, id in next, maps do
