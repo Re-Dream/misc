@@ -59,7 +59,7 @@ elseif CLIENT then
 	end
 	hook.Add("StartCommand", tag, function(ply, cmd)
 		if ply ~= LocalPlayer() or not afk.Gone then return end
-		local mouseMoved = (system.HasFocus() and (afk.Mouse.x ~= gui.MouseX() or afk.Mouse.y ~= gui.MouseY()) or false)
+		local mouseMoved = system.HasFocus() and (afk.Mouse.x ~= gui.MouseX() or afk.Mouse.y ~= gui.MouseY()) or false
 		if  mouseMoved or
 			cmd:GetMouseX() ~= 0 or
 			cmd:GetMouseY() ~= 0 or
@@ -161,7 +161,7 @@ elseif CLIENT then
 		surface.SetFont(tag .. "_time")
 		local col
 		if afk.Is then
-			col = Color(197, 167, 255)
+			col = Color(140, 159, 231)
 		else
 			col = Color(167, 255, 167)
 		end

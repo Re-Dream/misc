@@ -67,6 +67,9 @@ hook.Add("PostDrawTranslucentRenderables", tag, function()
 		local shouldDraw = false
 		shouldDraw = not ply:Crouching() and true or shouldDraw
 		shouldDraw = (not isLply or ply:ShouldDrawLocalPlayer()) and shouldDraw or false
+		if ply.IsAFK then
+			shouldDraw = not ply:IsAFK() and shouldDraw or false
+		end
 		shouldDraw = not ply:GetNoDraw() and shouldDraw or false
 
 		local alpha = 1
