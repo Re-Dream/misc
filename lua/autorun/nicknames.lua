@@ -46,6 +46,8 @@ else
 
 	local nextChange = {}
 	local nick = mingeban.CreateCommand({"name", "nick"}, function(caller, line)
+		if line:len() > 32 then return false, "Pick a shorter nickname, please. (" .. line:len() .. ")" end
+
 		local cd = nextChange[caller:UserID()]
 		if cd and cd > CurTime() then
 			return false, "You're changing nicks too quickly!"
