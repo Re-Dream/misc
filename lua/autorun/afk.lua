@@ -31,7 +31,7 @@ if SERVER then
 	local g = Color(127, 255, 127)
 	hook.Add("AFK", "AFKNotification", function(ply, is, time)
 		ply:EmitSound(not is and "replay/cameracontrolmodeentered.wav" or "replay/cameracontrolmodeexited.wav")
-		if not is then
+		if not is and time then
 			ply:ChatAddText(g, "Welcome back! ", w, "You were away for ", g, string.NiceTime(math.max(0, CurTime() - time - afk.AFKTime:GetInt())), w, ".")
 		end
 	end)
