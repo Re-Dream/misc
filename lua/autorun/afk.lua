@@ -38,6 +38,8 @@ if SERVER then
 elseif CLIENT then
 	afk.Mouse = { x = 0, y = 0 }
 	afk.Focus = system.HasFocus()
+	afk.Back = CurTime()
+	afk.Gone = CurTime()
 	afk.Is = false
 
 	hook.Add("RenderScene", tag, function()
