@@ -78,7 +78,7 @@ elseif CLIENT then
 	hook.Add("KeyPress", tag, Input)
 	hook.Add("KeyRelease", tag, Input)
 	hook.Add("PlayerBindPress", tag, Input)
-	local lastAFK = 0
+	local lastAFK = CurTime()
 	local function getAFKtime()
 		local lastInput
 		if afk.Is then
