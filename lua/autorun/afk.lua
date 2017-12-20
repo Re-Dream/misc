@@ -36,18 +36,16 @@ if SERVER then
 		end
 	end)
 elseif CLIENT then
+	local function CurTime()
+		return _G.CurTime and _G.CurTime() or 0
+	end
+
 	afk.Mouse = { x = 0, y = 0 }
 	afk.Focus = system.HasFocus()
 	afk.Back = CurTime()
 	afk.Gone = CurTime()
 	afk.Is = false
 
-	hook.Add("RenderScene", tag, function()
-		if LocalPlayer() == NULL or not LocalPlayer() or CurTime() < 1 then return end
-		afk.Back = 0
-		afk.Gone = CurTime()
-		hook.Remove("RenderScene", tag)
-	end)
 	local function Input()
 		if not afk.Gone then return end
 		if afk.Is then
@@ -80,7 +78,7 @@ elseif CLIENT then
 	hook.Add("KeyPress", tag, Input)
 	hook.Add("KeyRelease", tag, Input)
 	hook.Add("PlayerBindPress", tag, Input)
-	local lastAFK = CurTime()
+	local lastAFK = CurTime() - 3
 	local function getAFKtime()
 		local lastInput
 		if afk.Is then
