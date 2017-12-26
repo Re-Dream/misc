@@ -148,7 +148,7 @@ if CLIENT then
 			local code = txt:sub(prefix:len() + 1 + method:len() + 1)
 			local name = methodInfo.n
 			if method == "lsc" or method == "psc" then
-				name = code:Split(",")[1] or "no one"
+				name = ("[,%s]"):Explode(code, true)[1] or "no one"
 				name = name:Trim()
 				code = code:sub(name:len() + 2)
 			end
