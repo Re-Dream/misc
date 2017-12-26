@@ -305,7 +305,7 @@ elseif SERVER then
 			ply.banni = false
 			ply:SetRunSpeed(400)
 			ply:SetJumpPower(200)
-			ply:SetSuperJumpMultiplier(2)
+			ply:SetSuperJumpMultiplier(1.5)
 
 			hook.Run("PlayerLoadout", ply)
 		end
