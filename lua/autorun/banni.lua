@@ -164,11 +164,13 @@ elseif SERVER then
 
 	hookss.PlayerDeath = function(ply)
 		if (ply.banni == true) then
-			if ply:Alive() then return end
-			local oldPos, oldAng = ply:GetPos(), ply:EyeAngles()
-			ply:Spawn()
-			ply:SetPos(oldPos)
-			ply:SetEyeAngles(oldAng)
+			timer.Simple(0.5, function()
+				if ply:Alive() then return end
+				local oldPos, oldAng = ply:GetPos(), ply:EyeAngles()
+				ply:Spawn()
+				ply:SetPos(oldPos)
+				ply:SetEyeAngles(oldAng)
+			end)
 		end
 	end
 
