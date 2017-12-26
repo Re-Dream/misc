@@ -22,6 +22,7 @@ function PLAYER:GetPhysgunning()
 end
 
 hook.Add("PlayerCanGrabPlayer", tag, function(ply, ent)
+	if ply.Unrestricted then return true end
 	if ply:IsAdmin() or (ent:IsFriend(ply) and ent:GetInfoNum("physgun_noplayergrab", 1) == 0) or ent:IsBot() then
 		return true
 	end
