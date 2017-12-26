@@ -156,6 +156,22 @@ elseif SERVER then
 		net.Send(ply)
 	end
 
+	hookss.PlayerShouldTakeDamage = function(ply)
+		if (ply.banni == true) then 
+			return true
+		end
+	end
+
+	hookss.PlayerDeath = function(ply)
+		if (ply.banni == true) then
+			if ply:Alive() then return end
+			local oldPos, oldAng = ply:GetPos(), ply:EyeAngles()
+			ply:Spawn()
+			ply:SetPos(oldPos)
+			ply:SetEyeAngles(oldAng)
+		end
+	end
+
 	hookss.PlayerSpawn = function(ply)
 		if(ply.banni == true) then
 			timer.Simple(0.5, function()
