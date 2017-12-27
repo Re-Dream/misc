@@ -10,7 +10,6 @@ if SERVER then
 end
 
 if CLIENT then
-	
 	local iconlist = 
 	{"icon16/accept.png","icon16/award_star_gold_1.png","icon16/bomb.png",
 	"icon16/bin_empty.png","icon16/box.png","icon16/cake.png",
@@ -85,11 +84,12 @@ if CLIENT then
 		net.WriteTable({target,num})
 		net.SendToServer()
 	end
-	
+
 	function DrawReaction(target,matr)
 		local stime = SysTime()
 		local minus = 0
 		hook.Add( "PostDrawTranslucentRenderables", tostring(target), function()
+			if(matr <= table.Count(iconlist))then
 				local mat1 = Material(iconlist[matr])
 				mat1 = Material(iconlist[matr])
 				render.SetMaterial( mat1 )
@@ -97,12 +97,14 @@ if CLIENT then
 				local timeex = math.Clamp((math.sin((SysTime()-stime)*(math.pi/5))*10)*255,0,255)
 				if(target == LocalPlayer():EntIndex())then
 					cam.Start2D()
-						render.DrawScreenQuadEx( ltimeex, (ScrH()/2)-16, 64, 64 )
+					render.DrawScreenQuadEx( ltimeex, (ScrH()/2)-16, 64, 64 )
 					cam.End2D()
 				end
 				local spos,ang = Entity(target):GetBonePosition(Entity(target):LookupBone( "ValveBiped.Bip01_Head1" ))
 				spos = spos+Vector(0,0,3)
 				render.DrawQuadEasy( spos+ang:Right():Angle():Forward()*8,ang:Right():Angle():Forward(), 8, 8, Color( 255, 255, 255, timeex ),180)
+
+			end
 		end )
 		timer.Create( tostring(target).."alpha0", 6, 1, function()
 			hook.Remove("PostDrawTranslucentRenderables", tostring(target))
