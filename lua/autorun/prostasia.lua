@@ -11,7 +11,7 @@ if SERVER then
 	prostasia.Disconnected = {}
 	prostasia.DisconnectedCleanupDelay = CreateConVar(tag .. "_disconnected_cleanup_delay", "5", { FCVAR_ARCHIVE })
 	prostasia.DisconnectedCleanup = CreateConVar(tag .. "_disconnected_cleanup", "1", { FCVAR_ARCHIVE })
-	prostasia.CleanupBots = CreateConVar(tag .. "_cleanup_bots", "1", { FCVAR_ARCHIVE })
+	prostasia.CleanupBots = CreateConVar(tag .. "_cleanup_bots", "0", { FCVAR_ARCHIVE })
 	
 	local PlayerSpawned = {
 		Entities = {
@@ -50,7 +50,7 @@ if SERVER then
 	hook.Add("Think", tag, function()
 		if prostasia.DisconnectedCleanup:GetBool() then
 			for sid, time in next, prostasia.Disconnected do
-				if sid == "BOT" and not prostasia.CleanupBots then continue end
+				if sid == "BOT" and not prostasia.CleanupBots:GetBool() then continue end
 				
 				if CurTime() - time > prostasia.DisconnectedCleanupDelay:GetInt() * 60 then
 					for _, ent in next, ents.GetAll() do
