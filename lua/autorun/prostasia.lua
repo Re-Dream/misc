@@ -11,7 +11,6 @@ if SERVER then
 	prostasia.Disconnected = {}
 	prostasia.DisconnectedCleanupDelay = CreateConVar(tag .. "_disconnected_cleanup_delay", "5", { FCVAR_ARCHIVE })
 	prostasia.DisconnectedCleanup = CreateConVar(tag .. "_disconnected_cleanup", "1", { FCVAR_ARCHIVE })
-	prostasia.CleanupBots = CreateConVar(tag .. "_cleanup_bots", "0", { FCVAR_ARCHIVE })
 	
 	local PlayerSpawned = {
 		Entities = {
@@ -43,9 +42,7 @@ if SERVER then
 		end
 	end)
 	hook.Add("PlayerDisconnected", tag, function(ply)
-		if prostasia.DisconnectedCleanup:GetBool() then
-			if ply:IsBot() and not prostasia.CleanupBots then return end
-			
+		if prostasia.DisconnectedCleanup:GetBool() then			
 			prostasia.Disconnected[ply:SteamID()] = CurTime()
 		end
 	end)
