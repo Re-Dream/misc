@@ -12,6 +12,16 @@ if SERVER then
 	prostasia.DisconnectedCleanupDelay = CreateConVar(tag .. "_disconnected_cleanup_delay", "5", { FCVAR_ARCHIVE })
 	prostasia.DisconnectedCleanup = CreateConVar(tag .. "_disconnected_cleanup", "1", { FCVAR_ARCHIVE })
 	
+	util.AddNetworkString('nocleanup')
+	net.Receive('nocleanup', function(_, ply)
+		if not prostasia or not prostasia.Disconnected then return end -- ???
+		
+		local sid = net.ReadString()
+		if not sid or sid:Trim() == '' then return end
+		
+		prostasia.Disconnected[sid] = nil
+	end)
+	
 	local PlayerSpawned = {
 		Entities = {
 			"SWEP",
@@ -98,5 +108,11 @@ if SERVER then
 	end)
 	hook.Add("CanProperty", tag, function(ply, property, ent)
 		return Check(ply, ent)
+	end)
+elseif CLIENT then
+	concommand.Add('nocleanup', function(_, _, _, args)
+		net.Start('nocleanup')
+		net.WriteString(args)
+		net.SendToServer()
 	end)
 end
