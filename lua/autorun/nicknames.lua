@@ -11,6 +11,7 @@ PLAYER.GetRealName = PLAYER.SteamNick or PLAYER.Nick
 PLAYER.GetRealNick = PLAYER.SteamNick or PLAYER.Nick
 
 function PLAYER:Nick()
+	if not IsValid(self) then return "What the fuck, nickname error" end -- ??
 	local nick = self:GetNWString("Nick")
 	return nick:Trim() == "" and self:RealName() or nick
 end
