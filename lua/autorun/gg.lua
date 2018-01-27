@@ -258,8 +258,6 @@ GG.AddGame("Game of Life",function(tbl)
 			mx = mx-wx
 			my = my-wy
 
-			--print(mx,my)
-
 			if((mx > 0 and my > 25) and (mx < ww and my < wt))then
 				local x = math.Clamp(math.ceil((mx-25)/25)*25,0,GG.GameFrame:GetWide()-25)
 				local y = math.Clamp(math.ceil((my-25)/25)*25,25,GG.GameFrame:GetTall()-25)
