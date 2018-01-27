@@ -1,5 +1,4 @@
 local tag = 'seen'
-
 seen = {}
 
 seen.Init = function()
@@ -35,15 +34,14 @@ seen.Compute = function(name, limit)
 	limit = limit or 5
 	local str = ''
 	local data = table.Copy(seen.Get(name))
-
+	if not data or type(data) ~= 'table' then
+		return ([[Sorry, I haven't seen %s around.]]):format(name)
+	end
+	
 	for i = 1, #data do
 		if i == limit then break end
 
 		local data = data[i]
-		if not data or type(data) ~= 'table' then
-			return ([[Sorry, I haven't seen %s around.]]):format(name)
-		end
-
 		local rank = mingeban.users.superadmin[data.steamid] or mingeban.users.admin[data.steamid] and 'Admin' or 'Player'
 		str = str .. '\n' .. ([[%s %s was last seen on %s]]):format(rank, data.name, data.lastseen)
 	end
