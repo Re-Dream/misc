@@ -1,90 +1,91 @@
-if(GG != nil and IsValid(GG.GameFrame))then
-	GG.GameFrame:Close()
-end
-
-GG = {}
-GG.Games = {}
-GG.Ingame = false
-GG.TitleText = "Main menu"
-GG.TitleColor = Color(255,255,255,255)
-
-local function CreateFont()
-	surface.CreateFont("GGTitleFont",{
-		font = "Roboto Cn",
-		extended = true,
-		size = 20,
-		weight = 800,
-		antialias = true
-	})
-end
-CreateFont() 
-
-GG.GetWindowPaint = function(panel)
-	if(IsValid(panel))then
-		return function()
-			local h,w = panel:GetTall(),panel:GetWide()
-			surface.SetDrawColor(200,200,200,200)
-			surface.DrawRect(0,25,w,h-25)
-
-			surface.SetDrawColor(50,50,50,255)
-			surface.DrawRect(0,0,w,25)
-
-			surface.SetDrawColor(0,0,0,200)
-			surface.DrawOutlinedRect(0,0,w,h)
-
-			draw.SimpleText(GG.TitleText,"GGTitleFont",panel:GetWide()/2,3,GG.TitleColor,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
-		end
+if CLIENT then
+	if(GG != nil and IsValid(GG.GameFrame))then
+		GG.GameFrame:Close()
 	end
-end
 
-GG.GetButtonPaint = function(panel,r,g,b)
-	if(IsValid(panel))then
-		return function()
-			surface.SetDrawColor(r,g,b,255)
-			surface.DrawRect(0,0,25,25)
-			surface.SetDrawColor(0,0,0,200)
-			surface.DrawOutlinedRect(0,0,25,25)
-		end
-	end	
-end
-
-GG.AddGame = function(name,func)
-	GG.Games[table.Count(GG.Games)] = {name,func}
-end
-
-GG.OpenMainGameMenu = function()
+	GG = {}
+	GG.Games = {}
 	GG.Ingame = false
 	GG.TitleText = "Main menu"
 	GG.TitleColor = Color(255,255,255,255)
 
-	if(IsValid(GG.GameFrame))then
-		GG.GameFrame:Close()
+	local function CreateFont()
+		surface.CreateFont("GGTitleFont",{
+			font = "Roboto Cn",
+			extended = true,
+			size = 20,
+			weight = 800,
+			antialias = true
+		})
+	end
+	CreateFont() 
+
+	GG.GetWindowPaint = function(panel)
+		if(IsValid(panel))then
+			return function()
+				local h,w = panel:GetTall(),panel:GetWide()
+				surface.SetDrawColor(200,200,200,200)
+				surface.DrawRect(0,25,w,h-25)
+
+				surface.SetDrawColor(50,50,50,255)
+				surface.DrawRect(0,0,w,25)
+
+				surface.SetDrawColor(0,0,0,200)
+				surface.DrawOutlinedRect(0,0,w,h)
+
+				draw.SimpleText(GG.TitleText,"GGTitleFont",panel:GetWide()/2,3,GG.TitleColor,TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
+			end
+		end
 	end
 
-	GG.GameFrame = vgui.Create("DFrame")
-	GG.GameFrame:SetSize(500,525)
-	GG.GameFrame:ShowCloseButton(false)
-	GG.GameFrame:Center()
-	GG.GameFrame:SetDraggable(false)
-	GG.GameFrame:SetScreenLock(true)
-	GG.GameFrame:SetTitle("")
-	GG.GameFrame:MakePopup()
-	local paint = GG.GetWindowPaint(GG.GameFrame)
-	GG.GameFrame.Paint = paint
-
-	local CloseButt = vgui.Create("DButton",GG.GameFrame)
-	CloseButt:SetPos(0,0)
-	CloseButt:SetSize(25,25)
-	CloseButt:SetTooltip("Close")
-	CloseButt:SetText("")
-	CloseButt.Paint = GG.GetButtonPaint(CloseButt,255,0,0)
-	CloseButt.DoClick = function()
-		CloseButt:GetParent():Close()
+	GG.GetButtonPaint = function(panel,r,g,b)
+		if(IsValid(panel))then
+			return function()
+				surface.SetDrawColor(r,g,b,255)
+				surface.DrawRect(0,0,25,25)
+				surface.SetDrawColor(0,0,0,200)
+				surface.DrawOutlinedRect(0,0,25,25)
+			end
+		end	
 	end
 
-	local butts = {}
+	GG.AddGame = function(name,func)
+		GG.Games[table.Count(GG.Games)] = {name,func}
+	end
 
-	for k,v in pairs(GG.Games)do
+	GG.OpenMainGameMenu = function()
+		GG.Ingame = false
+		GG.TitleText = "Main menu"
+		GG.TitleColor = Color(255,255,255,255)
+
+		if(IsValid(GG.GameFrame))then
+			GG.GameFrame:Close()
+		end
+
+		GG.GameFrame = vgui.Create("DFrame")
+		GG.GameFrame:SetSize(500,525)
+		GG.GameFrame:ShowCloseButton(false)
+		GG.GameFrame:Center()
+		GG.GameFrame:SetDraggable(false)
+		GG.GameFrame:SetScreenLock(true)
+		GG.GameFrame:SetTitle("")
+		GG.GameFrame:MakePopup()
+		local paint = GG.GetWindowPaint(GG.GameFrame)
+		GG.GameFrame.Paint = paint
+
+		local CloseButt = vgui.Create("DButton",GG.GameFrame)
+		CloseButt:SetPos(0,0)
+		CloseButt:SetSize(25,25)
+		CloseButt:SetTooltip("Close")
+		CloseButt:SetText("")
+		CloseButt.Paint = GG.GetButtonPaint(CloseButt,255,0,0)
+		CloseButt.DoClick = function()
+			CloseButt:GetParent():Close()
+		end
+
+		local butts = {}
+
+		for k,v in pairs(GG.Games)do
 		local butt = vgui.Create("DButton",GG.GameFrame) --make a button for the current game in for
 		butt:SetSize(50,50)
 		butt:SetText(v[1])
@@ -298,3 +299,4 @@ concommand.Add("minigame",function(ply,cmd,ta,args)
 	RunConsoleCommand("cancelselect")
 	GG.OpenMainGameMenu()
 end)
+end
