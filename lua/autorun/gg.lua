@@ -106,7 +106,6 @@ if CLIENT then
 	end
 
 	GG.StartGame = function(gam)
-		GG.OpenMainGameMenu()
 		local bbutt = vgui.Create("DButton",GG.GameFrame)
 		bbutt:SetPos(25,0)
 		bbutt:SetSize(25,25)
@@ -164,14 +163,16 @@ if CLIENT then
 			butt:SetTooltip(v[1])
 
 			butt.DoClick = function()
+				butt:Remove()
 				for k,v in pairs(butts)do
 					v:Remove()
 				end
 				butts = {}
 				GG.StartGame(k)
 			end
-			butts[v[1]] = butt
+			butts[table.Count(butts)] = butt
 		end
+		PrintTable(butts)
 	end
 
 	GG.AddGame("Snake",function()
