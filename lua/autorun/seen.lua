@@ -1,3 +1,5 @@
+if not SERVER then return end
+
 local tag = 'seen'
 seen = {}
 
