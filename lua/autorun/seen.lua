@@ -33,7 +33,7 @@ seen.Get = function(name)
 end
 
 seen.Compute = function(name, limit)
-	limit = limit or 5
+	limit = limit + 1 or 6
 	local str = ''
 	local data = table.Copy(seen.Get(name))
 	if not data or type(data) ~= 'table' then
