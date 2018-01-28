@@ -172,7 +172,6 @@ if CLIENT then
 			end
 			butts[table.Count(butts)] = butt
 		end
-		PrintTable(butts)
 	end
 
 	GG.AddGame("Snake",function()
@@ -184,7 +183,7 @@ if CLIENT then
 		local celltbl = {}
 
 		for xx=0,GG.GameFrame:GetWide()-25,25 do
-			for yy=25,GG.GameFrame:GetTall(),25 do
+			for yy=25,GG.GameFrame:GetTall()-25,25 do
 				celltbl[table.Count(celltbl)] = {snake=false,x=xx,y=yy,num = table.Count(celltbl)}
 			end
 		end
@@ -203,9 +202,9 @@ if CLIENT then
 
 		local function GetNeighbours(cell)
 			local neighbours = {celltbl[cell.num-1],
-			celltbl[cell.num+25],
+			celltbl[cell.num+24],
 			celltbl[cell.num+1],
-			celltbl[cell.num-25]}
+			celltbl[cell.num-24]}
 			if(cell.x == 0)then
 				neighbours[4] = false
 			end
