@@ -59,7 +59,25 @@ if CLIENT then
 					draw.SimpleText(succ,"GGTitleFont",panel:GetWide()/2,panel:GetTall()/2,Color(255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 				end
 			end
-		end	
+		end
+	end
+
+	GG.GetScrollBarPaint = function(sbar)
+		function sbar:Paint(w,h)
+			draw.RoundedBox(4,4,0,w-4,h,Color(50,50,50))
+		end
+
+		function sbar.btnUp:Paint(w,h)
+			draw.RoundedBox(4,4,0,w-4,h,Color(100,100,100))
+		end
+
+		function sbar.btnDown:Paint(w,h)
+			draw.RoundedBox(4,4,0,w-4,h,Color(100,100,100))
+		end
+
+		function sbar.btnGrip:Paint(w,h)
+			draw.RoundedBox(7,4,0,w-4,h,Color(100,100,100))
+		end
 	end
 
 	GG.GameOverScreen = function(text,curgame)
@@ -134,7 +152,7 @@ if CLIENT then
 		end
 
 		GG.GameFrame = vgui.Create("DFrame")
-		GG.GameFrame:SetSize(500,525)
+		GG.GameFrame:SetSize(300,200)
 		GG.GameFrame:ShowCloseButton(false)
 		GG.GameFrame:Center()
 		GG.GameFrame:SetDraggable(false)
@@ -153,14 +171,19 @@ if CLIENT then
 			CloseButt:GetParent():Close()
 		end
 
+		local scroll = vgui.Create("DScrollPanel", GG.GameFrame)
+		scroll:Dock(FILL)
+		GG.GetScrollBarPaint(scroll:GetVBar())
+
 		local butts = {}
 
 		for k,v in pairs(GG.Games)do
-			local butt = vgui.Create("DButton",GG.GameFrame)
-			butt:SetSize(50,50)
-			butt:SetText(v[1])
-			butt:SetPos(k*50,25)
+			local butt = scroll:Add("DButton")
+			butt:SetSize(scroll:GetWide(),50)
+			butt:SetText("")
+			butt:Dock(TOP)
 			butt:SetTooltip(v[1])
+			butt.Paint = GG.GetButtonPaint(butt,Color(100,100,200),v[1])
 
 			butt.DoClick = function()
 				butt:Remove()
@@ -448,4 +471,6 @@ if CLIENT then
 			end
 		end
 	end)
+concommand.Add("gg",GG.OpenMainGameMenu)
+concommand.Add("minigame",GG.OpenMainGameMenu)
 end
