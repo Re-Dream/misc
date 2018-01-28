@@ -58,8 +58,9 @@ hook.Add('player_disconnect', tag, function(data)
 end)
 
 mingeban.CreateCommand(tag, function(caller, line)
-	local ply = easylua and easylua.FindEntity(line) or Entity(-1) -- uhh, maybe will change in future???
-
+	local ply = mingeban and mingeban.utils.findPlayer(line) or Entity(-1) -- uhh, maybe will change in future???
+	ply = type(ply) == 'table' and ply[1] or Entity(-1)
+	
 	if IsValid(ply) and type(ply) == 'Player' then ChatAddText(Color(100, 101, 255), ply:Name(), ' is currently online.') return end
 
 	ChatAddText(Color(100, 101, 255), seen.Compute(line))
