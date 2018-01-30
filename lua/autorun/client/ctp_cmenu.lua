@@ -15,7 +15,7 @@ hook.Add("HUDPaint", "ctp_cmenu", function()
 	local printed = false
 	local w = Color(194, 210, 225)
 	local g = Color(127, 255, 127)
-	local mat = WebMaterial("icon64_ctp", "https://gmlounge.us/fastdl/cmenu_zoom_extend.png", function(name, url, mat)
+	local mat = WebMaterial("icon64_ctp", "https://re-dream.org/fastdl/cmenu_zoom_extend.png", function(name, url, mat)
 		list.Set(
 			"DesktopWindows",
 			"ZCTP",

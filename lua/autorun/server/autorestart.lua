@@ -24,8 +24,8 @@ hook.Add("MingebanInitialized", "autorestart", function()
 			{
 				author = {
 					name = GetHostName(),
-					url = "http://gmlounge.us/join",
-					icon_url = "https://gmlounge.us/media/redream-logo.png"
+					url = "https://re-dream.org/join",
+					icon_url = "https://re-dream.org/media/redream-logo.png"
 				},
 				description = "is autorestarting, was playing `" .. game.GetMap() .. "`.",
 				color = DiscordRelay.HexColors.Red
