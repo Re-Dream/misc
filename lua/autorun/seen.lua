@@ -18,7 +18,7 @@ seen.Add = function(name, steamid, lastseen)
 	lastseen = lastseen or os.date('%m/%d/%Y at %H:%M', os.time())
 
 	seen.Remove(steamid)
-	return sql.Query(([[INSERT OR REPLACE INTO seen(name, steamid, lastseen) VALUES(%s, %s, %s)]]):format(
+	return sql.Query(([[INSERT OR REPLACE INTO seen VALUES(%s, %s, %s)]]):format(
 			sql.SQLStr(name),
 			sql.SQLStr(steamid),
 			sql.SQLStr(lastseen)
