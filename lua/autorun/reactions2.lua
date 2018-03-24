@@ -30,20 +30,22 @@ if CLIENT then
 
 	react.Reactions = {}
 
-	react.Menu = vgui.Create("DFrame")
-	react.Menu:SetTitle("")
-	react.Menu:SetSize(300,300)
-	react.Menu:SetDeleteOnClose(false)
-	react.Menu:SetScreenLock(true)
-	react.Menu:ShowCloseButton(false)
-	react.Menu:SetPos(0,ScrH()-react.Menu:GetTall())
-	react.Menu:Hide()
-	react.Menu.Paint = function()
-		draw.RoundedBoxEx(4,0,0,react.Menu:GetWide(),react.Menu:GetTall(),Color(100,100,255,255),true,true,false,false)
-		surface.SetDrawColor(100,100,100,255)
-		surface.DrawRect(4,25,react.Menu:GetWide()-8,react.Menu:GetTall()-29)
-		draw.SimpleText("Reactions","R2Font2",(react.Menu:GetWide()/2)+2,7,Color(0,0,0,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
-		draw.SimpleText("Reactions","R2Font2",react.Menu:GetWide()/2,5,Color(255,255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
+	react.CreateMenu = function()
+		react.Menu = vgui.Create("DFrame")
+		react.Menu:SetTitle("")
+		react.Menu:SetSize(300,300)
+		react.Menu:SetDeleteOnClose(false)
+		react.Menu:SetScreenLock(true)
+		react.Menu:ShowCloseButton(false)
+		react.Menu:SetPos(0,ScrH()-react.Menu:GetTall())
+		react.Menu:Hide()
+		react.Menu.Paint = function()
+			draw.RoundedBoxEx(4,0,0,react.Menu:GetWide(),react.Menu:GetTall(),Color(100,100,255,255),true,true,false,false)
+			surface.SetDrawColor(100,100,100,255)
+			surface.DrawRect(4,25,react.Menu:GetWide()-8,react.Menu:GetTall()-29)
+			draw.SimpleText("Reactions","R2Font2",(react.Menu:GetWide()/2)+2,7,Color(0,0,0,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
+			draw.SimpleText("Reactions","R2Font2",react.Menu:GetWide()/2,5,Color(255,255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
+		end
 	end
 
 	net.Start("R2_requestlist")
@@ -112,6 +114,9 @@ if CLIENT then
 	end
 
 	react.PopulateMenu = function()
+		if(!IsValid(react.Menu))then
+			react.CreateMenu()
+		end
 		local CategoryTabs = vgui.Create("DPropertySheet",react.Menu)
 		CategoryTabs:Dock(FILL)
 		CategoryTabs:SetFadeTime(0)
@@ -195,6 +200,9 @@ if CLIENT then
 		end
 	end)
 	hook.Add("OnContextMenuOpen", "ReactionMenuOpen", function()
+		if(!IsValid(react.Menu))then
+			react.CreateMenu()
+		end
 		react.Menu:Show()
 		react.Menu:MakePopup()
 	end)
