@@ -48,9 +48,6 @@ if CLIENT then
 		end
 	end
 
-	net.Start("R2_requestlist")
-	net.SendToServer()
-
 	net.Receive("R2_sendlist",function()
 		react.Emotes = net.ReadTable()
 		react.PopulateMenu()
@@ -202,6 +199,8 @@ if CLIENT then
 	hook.Add("OnContextMenuOpen", "ReactionMenuOpen", function()
 		if(!IsValid(react.Menu))then
 			react.CreateMenu()
+			net.Start("R2_requestlist")
+			net.SendToServer()
 		end
 		react.Menu:Show()
 		react.Menu:MakePopup()
