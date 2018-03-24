@@ -193,6 +193,10 @@ if CLIENT then
 				local spos,ang = k:GetBonePosition(bone)
 				ang2 = ang:Right():Angle():Forward()
 				render.DrawQuadEasy(((ang:Forward()*3)+(ang2*7)+spos),ang2, 8, 8, Color(255, 255, 255, math.Clamp(255-(timeex-4)*255,0,255)),180)
+			else
+				spos = k:GetPos()+Vector(0,0,80+math.sin(timeex*3)*2)
+				render.DrawQuadEasy(spos,Angle(0,timeex*180,0):Forward(), 8, 8, Color(255, 255, 255, math.Clamp(255-(timeex-4)*255,0,255)),180)
+				render.DrawQuadEasy(spos,-Angle(0,timeex*180,0):Forward(), 8, 8, Color(255, 255, 255, math.Clamp(255-(timeex-4)*255,0,255)),180)
 			end
 		end
 	end)
