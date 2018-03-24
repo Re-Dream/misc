@@ -30,6 +30,25 @@ if CLIENT then
 
 	react.Reactions = {}
 
+	react.Menu = vgui.Create("DFrame")
+	react.Menu:SetTitle("")
+	react.Menu:SetSize(300,300)
+	react.Menu:SetDeleteOnClose(false)
+	react.Menu:SetScreenLock(true)
+	react.Menu:ShowCloseButton(false)
+	react.Menu:SetPos(0,ScrH()-react.Menu:GetTall())
+	react.Menu:Hide()
+	react.Menu.Paint = function()
+		draw.RoundedBoxEx(4,0,0,react.Menu:GetWide(),react.Menu:GetTall(),Color(100,100,255,255),true,true,false,false)
+		surface.SetDrawColor(100,100,100,255)
+		surface.DrawRect(4,25,react.Menu:GetWide()-8,react.Menu:GetTall()-29)
+		draw.SimpleText("Reactions","R2Font2",(react.Menu:GetWide()/2)+2,7,Color(0,0,0,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
+		draw.SimpleText("Reactions","R2Font2",react.Menu:GetWide()/2,5,Color(255,255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
+	end
+
+	net.Start("R2_requestlist")
+	net.SendToServer()
+
 	net.Receive("R2_sendlist",function()
 		react.Emotes = net.ReadTable()
 		react.PopulateMenu()
@@ -39,16 +58,13 @@ if CLIENT then
 		local path = net.ReadString()
 		local web = net.ReadBool()
 		local ply = net.ReadEntity()
-		print(path)
 		if web then
 			path = react.WebMaterial(path)
 		end
-		print(path)
 		react.Reactions[ply] = {path = path,web = web,time = SysTime()}
 		timer.Create(ply:SteamID(),7,1,function()
 			react.Reactions[ply] = nil
 		end)
-		PrintTable(react.Reactions)
 	end)
 
 	local magicNumbers = {
@@ -59,21 +75,49 @@ if CLIENT then
 	react.WebMaterial = function(url)
 		local filename = url:Split('/')
 		filename = filename[#filename]:match('(.*)%.') .. '.png'
-		file.CreateDir('webmaterial')
-		MsgC('[WebMaterial] ') print('Fetching ', url)
-		http.Fetch(url, function(body, len, headers, code)
-			if not body:match('^' .. magicNumbers.png) and not body:match('^' .. magicNumbers.jpg) then return MsgC('[WebMaterial] '), print('Unsupported image format') end
-			if code < 200 or code >= 400 then return MsgC('[WebMaterial] '), print('Issues fetching ', url) end
-			MsgC('[WebMaterial] ') print('Successfully fetched ', url)
-			file.Write('webmaterial/' .. filename, body)
-			
-		end)
+		if(!file.Exists("webmaterial/" .. filename,"DATA"))then
+			file.CreateDir('webmaterial')
+			http.Fetch(url, function(body, len, headers, code)
+				if not body:match('^' .. magicNumbers.png) and not body:match('^' .. magicNumbers.jpg) then return end
+				if code < 200 or code >= 400 then return end
+				file.Write('webmaterial/' .. filename, body)
+			end)
+		end
 		return "../data/webmaterial/"..filename
+	end
+
+	surface.CreateFont("R2Font",{
+		font = "Roboto Bk",
+		size = 14
+	})
+	surface.CreateFont("R2Font2",{
+		font = "Roboto Bk",
+		size = 18
+	})
+
+	react.GetButtonPaint = function(path,web,panel)
+		return function()
+			draw.RoundedBox(4,4,4,panel:GetWide()-8,panel:GetTall()-8,Color(100,100,255,255))
+			surface.SetDrawColor(255,255,255,255)
+			surface.DrawRect(8,8,panel:GetWide()-16,panel:GetTall()-16)
+			local mat
+			if(web)then
+				mat = Material(react.WebMaterial(path))
+			else
+				mat = Material(path)
+			end
+			surface.SetMaterial(mat)
+			surface.DrawTexturedRect((panel:GetWide()/2)-panel:GetWide()/4,(panel:GetTall()/2)-panel:GetWide()/4,panel:GetWide()/2,panel:GetTall()/2)
+		end
 	end
 
 	react.PopulateMenu = function()
 		local CategoryTabs = vgui.Create("DPropertySheet",react.Menu)
 		CategoryTabs:Dock(FILL)
+		CategoryTabs:SetFadeTime(0)
+		CategoryTabs.Paint = function()
+			draw.RoundedBoxEx(4,0,20,CategoryTabs:GetWide(),CategoryTabs:GetTall(),Color(255,255,255,255),true,true,false,false)
+		end
 
 		local size = (react.Menu:GetWide()/5)-5
 		for k,v in pairs(react.Emotes) do
@@ -85,9 +129,9 @@ if CLIENT then
 				for k,v in pairs(v.files)do
 					local butt = ScrollPanel:Add("DButton")
 					butt:SetText("")
-					butt:SetImage(v)
 					butt:SetSize(size,size)
 					butt:SetPos(x,y)
+					butt.Paint = react.GetButtonPaint(v,false,butt)
 					butt.DoClick = function()
 						react.SendReaction(v,false)
 					end
@@ -101,10 +145,10 @@ if CLIENT then
 			if(v.urls != nil)then
 				for k,v in pairs(v.urls)do
 					local butt = ScrollPanel:Add("DButton")
-					butt:SetText(v)
-					--butt:SetImage(v)
+					butt:SetText("")
 					butt:SetSize(size,size)
 					butt:SetPos(x,y)
+					butt.Paint = react.GetButtonPaint(v,true,butt)
 					butt.DoClick = function()
 						react.SendReaction(v,true)
 					end
@@ -115,30 +159,14 @@ if CLIENT then
 					end
 				end
 			end
-			CategoryTabs:AddSheet(k,ScrollPanel)
+			local tab = CategoryTabs:AddSheet(string.rep(" ",string.len(k)*2),ScrollPanel).Tab
+			tab.Paint = function()
+				draw.RoundedBoxEx(4,0,0,tab:GetWide(),20,Color(100,100,255,255),true,true,false,false)
+				surface.SetDrawColor(255,255,255,255)
+				surface.DrawRect(1,4,tab:GetWide()-2,tab:GetTall())
+				draw.SimpleText(string.Replace(k,"_"," "),"R2Font",tab:GetWide()/2,5,Color(0,0,0,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
+			end
 		end
-	end
-
-	react.CreateMenu = function()
-		react.Menu = vgui.Create("DFrame")
-		react.Menu:SetTitle("Reactions")
-		react.Menu:SetSize(400,600)
-		react.Menu:SetDeleteOnClose(false)
-		react.Menu:SetScreenLock(true)
-		react.Menu:Center()
-		react.Menu:Hide()
-		net.Start("R2_requestlist")
-		net.SendToServer()
-	end
-	react.CreateMenu()
-
-	react.OpenMenu = function()
-		if(not IsValid(react.Menu))then
-			react.CreateMenu()
-		end
-
-		react.Menu:Show()
-		react.Menu:MakePopup()
 	end
 
 	react.SendReaction = function(path,web)
@@ -152,9 +180,26 @@ if CLIENT then
 		for k,v in pairs(react.Reactions) do
 			render.SetMaterial(Material(v.path))
 			local timeex = SysTime()-v.time
-			local spos,ang = k:GetBonePosition(k:LookupBone("ValveBiped.Bip01_Head1"))
-			ang2 = ang:Right():Angle():Forward()
-			render.DrawQuadEasy(((ang:Forward()*3)+(ang2*7)+spos),ang2, 8, 8, Color(255, 255, 255, math.Clamp(255-(timeex-4)*255,0,255)),180)
+			local ltimeex = math.Clamp(((math.sin(timeex*(math.pi/5))*10)*64)-64,-64,0)
+			if(k == LocalPlayer())then
+				cam.Start2D()
+				render.DrawScreenQuadEx( ltimeex, (ScrH()/2)-16, 64, 64 )
+				cam.End2D()
+			end
+			local bone = k:LookupBone("ValveBiped.Bip01_Head1")
+			if(bone != nil)then
+				local spos,ang = k:GetBonePosition(bone)
+				ang2 = ang:Right():Angle():Forward()
+				render.DrawQuadEasy(((ang:Forward()*3)+(ang2*7)+spos),ang2, 8, 8, Color(255, 255, 255, math.Clamp(255-(timeex-4)*255,0,255)),180)
+			end
 		end
+	end)
+	hook.Add("OnContextMenuOpen", "ReactionMenuOpen", function()
+		react.Menu:Show()
+		react.Menu:MakePopup()
+	end)
+
+	hook.Add("OnContextMenuClose", "ReactionMenuClose", function()
+		react.Menu:Hide()
 	end)
 end
