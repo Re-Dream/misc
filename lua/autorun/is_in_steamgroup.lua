@@ -8,6 +8,7 @@ if SERVER then
 	hook.Add("PlayerSpawn", tag, function(ply)
 		if nextCheck[ply] and nextCheck[ply] > CurTime() then return end
 		http.Fetch("http://steamcommunity.com/gid/" .. groupID .. "/memberslistxml/?xml=1", function(body, len, headers, code)
+			if not IsValid(ply) then return end
 			if body:match("<steamID64>" .. ply:SteamID64() .. "</steamID64>") then
 				ply:SetNWBool(tag, true)
 			else
