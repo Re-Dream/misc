@@ -1,8 +1,8 @@
 
 local tag = "AFK"
 
-afk = {}
-afk.AFKTime = CreateConVar("mp_afktime", "90", { FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY }, "The time it takes for a player to become AFK when inactive.")
+afksys = {}
+afksys.AFKTime = CreateConVar("mp_afktime", "90", { FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY }, "The time it takes for a player to become AFK when inactive.")
 
 local PLAYER = FindMetaTable("Player")
 
@@ -20,7 +20,7 @@ if SERVER then
 		local is = net.ReadBool()
 		ply.AFK_Is = is
 		hook.Run("AFK", ply, is, ply.AFK_Time)
-		ply.AFK_Time = is and CurTime() - afk.AFKTime:GetInt() or nil
+		ply.AFK_Time = is and CurTime() - afksys.AFKTime:GetInt() or nil
 		net.Start(tag)
 			net.WriteUInt(ply:EntIndex(), 8)
 			net.WriteBool(is)
@@ -32,7 +32,7 @@ if SERVER then
 	hook.Add("AFK", "AFKNotification", function(ply, is, time)
 		ply:EmitSound(not is and "replay/cameracontrolmodeentered.wav" or "replay/cameracontrolmodeexited.wav")
 		if not is and time then
-			ply:ChatAddText(g, "Welcome back! ", w, "You were away for ", g, string.NiceTime(math.max(0, CurTime() - time - afk.AFKTime:GetInt())), w, ".")
+			ply:ChatAddText(g, "Welcome back! ", w, "You were away for ", g, string.NiceTime(math.max(0, CurTime() - time - afksys.AFKTime:GetInt())), w, ".")
 		end
 	end)
 elseif CLIENT then
@@ -40,36 +40,36 @@ elseif CLIENT then
 		return _G.CurTime and _G.CurTime() or 0
 	end
 
-	afk.Mouse = { x = 0, y = 0 }
-	afk.Focus = system.HasFocus()
-	afk.Back = CurTime()
-	afk.Gone = CurTime()
-	afk.Is = false
+	afksys.Mouse = { x = 0, y = 0 }
+	afksys.Focus = system.HasFocus()
+	afksys.Back = CurTime()
+	afksys.Gone = CurTime()
+	afksys.Is = false
 
 	local function Input()
-		if not afk.Gone then return end
-		if afk.Is then
-			afk.Back = afk.Gone
+		if not afksys.Gone then return end
+		if afksys.Is then
+			afksys.Back = afksys.Gone
 			net.Start(tag)
 				net.WriteBool(false)
 			net.SendToServer()
 		end
-		afk.Gone = CurTime()
-		afk.Is = false
+		afksys.Gone = CurTime()
+		afksys.Is = false
 	end
 	hook.Add("StartCommand", tag, function(ply, cmd)
-		if ply ~= LocalPlayer() or not afk.Gone then return end
-		local mouseMoved = system.HasFocus() and (afk.Mouse.x ~= gui.MouseX() or afk.Mouse.y ~= gui.MouseY()) or false
+		if ply ~= LocalPlayer() or not afksys.Gone then return end
+		local mouseMoved = system.HasFocus() and (afksys.Mouse.x ~= gui.MouseX() or afksys.Mouse.y ~= gui.MouseY()) or false
 		if  mouseMoved or
 			cmd:GetMouseX() ~= 0 or
 			cmd:GetMouseY() ~= 0 or
 			cmd:GetButtons() ~= 0 or
-			(afk.Focus == false and afk.Focus ~= system.HasFocus())
+			(afksys.Focus == false and afksys.Focus ~= system.HasFocus())
 		then
 			Input()
 		end
-		if afk.Gone + afk.AFKTime:GetInt() < CurTime() and not afk.Is then
-			afk.Is = true
+		if afksys.Gone + afksys.AFKTime:GetInt() < CurTime() and not afksys.Is then
+			afksys.Is = true
 			net.Start(tag)
 				net.WriteBool(true)
 			net.SendToServer()
@@ -81,15 +81,15 @@ elseif CLIENT then
 	local lastAFK = CurTime() - 3
 	local function getAFKtime()
 		local lastInput
-		if afk.Is then
-		 	lastInput = afk.Gone
+		if afksys.Is then
+		 	lastInput = afksys.Gone
 		 	lastAFK = CurTime()
 		else
-		 	lastInput = afk.Back
+		 	lastInput = afksys.Back
 		end
-		-- return time since last input since time it takes to get afk as well as
+		-- return time since last input since time it takes to get afksys as well as
 		-- the time it was before we came back
-		return math.max(lastAFK - (lastInput + afk.AFKTime:GetInt()), 0), lastAFK
+		return math.max(lastAFK - (lastInput + afksys.AFKTime:GetInt()), 0), lastAFK
 	end
 
 	net.Receive(tag, function()
@@ -97,7 +97,7 @@ elseif CLIENT then
 		local is = net.ReadBool()
 		ply.AFK_Is = is
 		hook.Run("AFK", ply, is, ply.AFK_Time)
-		ply.AFK_Time = is and CurTime() - afk.AFKTime:GetInt() or nil
+		ply.AFK_Time = is and CurTime() - afksys.AFKTime:GetInt() or nil
 	end)
 
 	surface.CreateFont(tag, {
@@ -127,15 +127,15 @@ elseif CLIENT then
 		end
 		surface.DrawText(txt)
 	end
-	afk.Draw = CreateConVar("cl_afk_hud_draw", "1", { FCVAR_ARCHIVE })
+	afksys.Draw = CreateConVar("cl_afk_hud_draw", "1", { FCVAR_ARCHIVE })
 	hook.Add("HUDPaint", tag, function()
-		if not afk.Draw:GetBool() then return end
-		afk.Focus = system.HasFocus()
+		if not afksys.Draw:GetBool() then return end
+		afksys.Focus = system.HasFocus()
 
 		local AFKTime, lastAFK = getAFKtime()
 
 		-- wait 3 seconds before hiding
-		local show = afk.Is
+		local show = afksys.Is
 		show = show or CurTime() < lastAFK + 3
 		a = Lerp(FrameTime() * 3, a, show and 1 or 0)
 		if a <= 0.005 then return end
@@ -160,7 +160,7 @@ elseif CLIENT then
 
 		surface.SetFont(tag .. "_time")
 		local col
-		if afk.Is then
+		if afksys.Is then
 			col = Color(140, 159, 231)
 		else
 			col = Color(167, 255, 167)
@@ -169,6 +169,5 @@ elseif CLIENT then
 
 		surface.SetAlphaMultiplier(1)
 	end)
-
 end
 
