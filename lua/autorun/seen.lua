@@ -44,7 +44,7 @@ seen.Compute = function(name, limit)
 		if i == limit then break end
 
 		local data = data[i]
-		local rank = mingeban.users.superadmin[data.steamid] or mingeban.users.admin[data.steamid] and 'Admin' or 'Player'
+		local rank = (mingeban.users.superadmin[data.steamid] or mingeban.users.admin[data.steamid]) and 'Admin' or 'Player'
 		str = str .. '\n' .. ([[%s %s was last seen on %s]]):format(rank, data.name, data.lastseen)
 	end
 
