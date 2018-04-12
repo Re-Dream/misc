@@ -13,11 +13,12 @@ end
 local function RemovePanel()
 	focus_panel:Remove()
 end
-local function CreatePanel()
+local function CreatePanel(x, y)
 	focus_panel = vgui.Create("EditablePanel")
 	focus_panel:SetKeyboardInputEnabled(true)
 	focus_panel:SetVisible(true)
 	focus_panel:MakePopup()
+	input.SetCursorPos(x, y)
 end
 
 local cvar = CreateClientConVar(tag, "1")
@@ -28,7 +29,7 @@ hook.Add("Think", tag, function()
 			print("Lost focus")
 		end
 		hook.Run("OnFocusChanged", false)
-		CreatePanel()
+		CreatePanel(gui.MousePos())
 	elseif HasFocus() and IsValid(focus_panel) then
 		if GetConVarNumber("developer") == 1 then
 			print("Gained focus")
