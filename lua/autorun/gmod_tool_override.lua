@@ -34,4 +34,8 @@ hook.Add("Initialize", "gmod_tool_override", function()
 		util.Effect("ToolTracer", effectdata)
 	end
 end)
+if GAMEMODE then
+	hook.GetTable().Initialize.gmod_tool_override()
+end
+
 
