@@ -12,7 +12,7 @@ function redream:Init()
 	end)
 end
 function redream:GetDetails()
-	return GetHostName() .. " (" .. ip .. ")"
+	return GetHostName() .. " (" .. game.GetIPAddress() .. ")"
 end
 function redream:GetState()
 	return "Playing on " .. game.GetMap() .. " (" .. player.GetCount() .. " / " .. game.MaxPlayers() .. " players)"
