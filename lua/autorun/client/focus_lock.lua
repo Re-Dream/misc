@@ -18,7 +18,7 @@ local function CreatePanel(x, y)
 	focus_panel:SetKeyboardInputEnabled(true)
 	focus_panel:SetVisible(true)
 	focus_panel:MakePopup()
-	input.SetCursorPos(x, y)
+	-- input.SetCursorPos(x, y)
 end
 
 local cvar = CreateClientConVar(tag, "1")
