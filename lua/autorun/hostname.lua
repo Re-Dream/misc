@@ -22,8 +22,17 @@ code stupid shit
 make stupid shit
 professionalism itself
 out of hostnames
-pac4 when?
-better than outfitter
+Waiting for S&box
+Coming soon to your nearest S&box
+better than wardrobe
+developer testbed
+developer testing grounds
+meme-dream
+The Dreamcast Emulator
+this still exists?
+who even works on this anymore
+FUCK SAKE
+everything broke
 trust no one, not even the workshop
 re-dream.org
 re-dream.org
