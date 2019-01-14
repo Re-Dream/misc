@@ -20,6 +20,12 @@ CreateFont(tag .. "2", {
 	size = 64,
 	additive = true
 }, 12)
+CreateFont(tag .. "3", {
+	font = "Roboto",
+	weight = 550,
+	size = 90,
+	additive = false
+}, 12)
 
 local awayPhrases = {
 	"Zzz",
@@ -60,6 +66,7 @@ local function DrawText(txt, font, y, col)
 	surface.SetTextColor(col)
 	surface.DrawText(txt)
 end
+
 hook.Add("PostDrawTranslucentRenderables", tag, function()
 	if not IsValid(lply) then lply = LocalPlayer() return end
 	for _, ply in next, PlayersByRange() do
@@ -104,7 +111,8 @@ hook.Add("PostDrawTranslucentRenderables", tag, function()
 
 				local txt = ply:Nick()
 				DrawText(ply:Nick(), tag, 0, team.GetColor(ply:Team()))
-
+				DrawText(ply:GetNWString('title'), tag .. "3", 1.3, Color(80, 80, 80))
+				
 				if lply.IsAFK and ply:IsAFK() then
 					local AFKTime = math.max(0, CurTime() - ply:AFKTime())
 					local h = math.floor(AFKTime / 60 / 60)
@@ -120,4 +128,3 @@ hook.Add("PostDrawTranslucentRenderables", tag, function()
 		end
 	end
 end)
-
